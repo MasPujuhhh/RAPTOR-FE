@@ -225,6 +225,11 @@ const router = createRouter({
       name: "tes2",
       component: () => import("../views/admin/Tes2.vue"),
     },
+    {
+      path: "/user",
+      name: "userbjir",
+      component: () => import("../views/user/user.vue"),
+    },
   ],
 });
 

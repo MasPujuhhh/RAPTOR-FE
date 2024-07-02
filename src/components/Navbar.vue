@@ -8,9 +8,9 @@
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
       position: fixed;
       width: 100%;
-      /* z-index: 99; */
+      z-index: 99;
     "
-    class="navbar navbar-expand-xl navbar-dark"
+    class="navbar navbar-expand-xl navbar-dark bg-white"
   >
     <div class="container-fluid" style="width: 100%">
       <div
