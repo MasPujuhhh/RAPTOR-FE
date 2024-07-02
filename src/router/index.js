@@ -18,14 +18,12 @@ const router = createRouter({
     {
       path: "/logbook/:id",
       name: "logbook-id",
-      component: () =>
-        import("../views/user/UserLogbookDetail.vue"),
+      component: () => import("../views/user/UserLogbookDetail.vue"),
     },
     {
       path: "/logbook/edit/:id",
       name: "logbook-edit-date",
-      component: () =>
-        import("../views/user/UserLogbookEdit.vue"),
+      component: () => import("../views/user/UserLogbookEdit.vue"),
     },
     {
       path: "/todo",
@@ -92,8 +90,6 @@ const router = createRouter({
       name: "kategori",
       component: () => import("../views/user/KategoriView.vue"),
     },
-
-    
 
     // ADMIN
     {
@@ -173,7 +169,8 @@ const router = createRouter({
     {
       path: "/admin/master-category",
       name: "admin-category",
-      component: () => import("../views/admin/masterCategory/MasterCategory.vue"),
+      component: () =>
+        import("../views/admin/masterCategory/MasterCategory.vue"),
     },
     {
       path: "/admin/master-label",
@@ -233,25 +230,25 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
-  const isAuthUser = JSON.parse(localStorage.getItem("authUser"));
-  const isAuthAdmin = JSON.parse(localStorage.getItem("authAdmin"));
-  // console.log(isAuthAdmin)
+// router.beforeEach((to, from, next) => {
+//   const isAuthUser = JSON.parse(localStorage.getItem("authUser"));
+//   const isAuthAdmin = JSON.parse(localStorage.getItem("authAdmin"));
+//   // console.log(isAuthAdmin)
 
-  // console.log(to.name === "login" && isAuthAdmin);
-  // console.log("from", from);
-  // if (to.path === "http://localhost:8001/auth/google") next();
-  // if (to.name === "home-user") next();
-  if (to.name === "register") next();
-  // if (to.name === "listProduct") next();
-  // if (to.name === "kategori") next();
-  // if (to.name === "login-google") next();
-  if (isAuthAdmin) next();
+//   // console.log(to.name === "login" && isAuthAdmin);
+//   // console.log("from", from);
+//   // if (to.path === "http://localhost:8001/auth/google") next();
+//   // if (to.name === "home-user") next();
+//   if (to.name === "register") next();
+//   // if (to.name === "listProduct") next();
+//   // if (to.name === "kategori") next();
+//   // if (to.name === "login-google") next();
+//   if (isAuthAdmin) next();
 
-  if (to.name !== "login" && !isAuthUser) next({ name: "login" });
-  if (to.name === "login" && isAuthUser) next({ name: "home-user" });
-  if (to.name === "login" && isAuthAdmin) next({ name: "dashboard-admin" });
-  next();
-});
+//   if (to.name !== "login" && !isAuthUser) next({ name: "login" });
+//   if (to.name === "login" && isAuthUser) next({ name: "home-user" });
+//   if (to.name === "login" && isAuthAdmin) next({ name: "dashboard-admin" });
+//   next();
+// });
 
 export default router;
