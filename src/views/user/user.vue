@@ -177,7 +177,9 @@ onMounted(() => {
     </div>
     <div class="row w-100 mb-4">
       <div class="col d-flex justify-content-end">
-        <button class="btn btn-lg btn-secondary">klik akuh</button>
+        <RouterLink to="/absen">
+          <button class="btn btn-lg btn-secondary">klik akuh</button>
+        </RouterLink>
       </div>
     </div>
     <div class="row d-flex w-100 min-vh-100">

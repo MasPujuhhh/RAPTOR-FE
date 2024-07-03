@@ -213,8 +213,8 @@ const router = createRouter({
       component: () => import("../views/admin/tugas/Tugas.vue"),
     },
     {
-      path: "/tes",
-      name: "tes",
+      path: "/absen",
+      name: "absen",
       component: () => import("../views/admin/Tes.vue"),
     },
     {
