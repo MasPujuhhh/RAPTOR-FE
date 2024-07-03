@@ -171,7 +171,8 @@ const renderDashboard = async (jadwal = null) => {
   if (!jadwal) {
     jadwal = new Date()
   }
-  jadwal = jadwal.toISOString().split('T')[0]
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  jadwal = jadwal.toLocaleDateString('id-ID', options).split('/').reverse().join('-');
   try {
     let res = await axios.get(`${endpoint}/dashboard/`, {
       params: {
