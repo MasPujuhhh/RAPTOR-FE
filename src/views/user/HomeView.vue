@@ -322,11 +322,11 @@ onMounted(() => {
             v-for="(report, index) in daily_report"
             :key="index"
             class="bg-white d-flex flex-column justify-content-between shadow rounded-3 p-3"
-            style="width: 45%; min-height: 25%"
+            style="width: 45%; min-height: 25%; max-height: 30%"
           >
             <template v-if="editTask === index">
               <div class="d-flex gap-2 justify-content-center border-bottom border-black py-1 h-25">
-                <div class="d-flex h-75 gap-4" style="width: 100%">
+                <div class="d-flex h-75 gap-4 overflow-y-scroll" style="width: 100%; max-height: 1000px;">
                   <textarea v-model="new_report.deskripsi" class="form-control form-control-sm"></textarea>
                 </div>
               </div>
@@ -362,10 +362,10 @@ onMounted(() => {
           <div
             v-if="showtask"
             class="bg-white d-flex flex-column justify-content-between shadow rounded-3 p-3"
-            style="width: 45%; min-height: 25%"
+            style="width: 45%; min-height: 25%; max-height: 30%"
           >
             <div class="d-flex gap-2 justify-content-center border-bottom border-black py-1 h-25">
-              <div class="d-flex h-75 gap-4" style="width: 100%">
+              <div class="d-flex h-75 gap-4 overflow-y-scroll" style="width: 100%; max-height: 1000px;">
                 <textarea v-model="new_report.deskripsi" class="form-control form-control-sm"></textarea>
               </div>
             </div>
@@ -386,7 +386,7 @@ onMounted(() => {
           </div>
           <button
             class="bg-white shadow rounded-3 border-0 btn fs-1"
-            style="width: 45%; min-height: 25%"
+            style="width: 45%; min-height: 25%; max-height: 30%;"
             @click="showtask = true"
           >
             +
