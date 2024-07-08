@@ -1,35 +1,4 @@
 <template>
-  <!-- <div class="capture-container">
-    <div v-if="!captured">
-      <video ref="video" class="video" autoplay></video>
-      <button @click="captureImage">Capture</button>
-    </div>
-    <div v-else>
-      <p>keterangan</p>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="description" value="masuk" id="masuk" v-model="description">
-        <label class="form-check-label" for="masuk">
-          Masuk
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="description" value="wfh" id="wfh" v-model="description">
-        <label class="form-check-label" for="wfh">
-          WFH
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="description" value="izin/sakit" id="izin/sakit" v-model="description">
-        <label class="form-check-label" for="izin/sakit">
-          Izin/ Sakit
-        </label>
-      </div>
-      <img :src="capturedImage" class="captured-image" />
-      <button @click="deleteImage">Delete</button>
-      <button @click="saveImage">Save</button>
-    </div>
-    <canvas ref="canvas" class="canvas"></canvas>
-  </div> -->
   <div class="container-fluid d-flex justify-content-center">
     <div
       class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3"
@@ -121,15 +90,24 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import { toast } from "vue3-toastify";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import moment from "moment";
+import "moment/locale/id";
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
 
 const video = ref(null);
 const canvas = ref(null);
 const captured = ref(false);
 const capturedImage = ref("");
 const description = ref("masuk");
+
+const absensi = ({})
+
 let stream = null;
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlltQmMwdXdyaWxYSmZueFZpTGlqRiIsImVtYWlsIjoibHVzaUBnbWFpbC5jb20iLCJwYXNzd29yZCI6IiQyYiQxMCRXdGlhSlNlL2EwRHZDUUhML1dTLnN1U1pvYldaWkt6LzZUOHFZWjJVNDJ1Qm1FcmdoRGd4QyIsImlzX2FjdGl2ZSI6dHJ1ZSwibmFtYV9sZW5na2FwIjoiTHVhc2lhbmEiLCJ0ZWxlcG9uIjoiMDg4NzczNDc2MzQ1IiwiZm90b19wcm9maWxlIjoiL2Fzc2V0cy9pbWcvcHAtTHVhc2lhbmEtMTcxODY4ODU3NDE5Ni5qcGciLCJqZW5pc19iYW5rIjpudWxsLCJub19yZWsiOm51bGwsInJvbGVfcGVydXNhaGFhbiI6ImFkbWluIiwibmFtYV9yb2xlIjoiQWRtaW4iLCJyb2xlX2FsaWFzIjoiQURNSU4iLCJsb2thc2kiOiJ0YW5nZXJhbmciLCJjcmVhdGVkQXQiOiIyMDI0LTA2LTA4VDE0OjU3OjMyLjI2NloiLCJ1cGRhdGVkQXQiOiIyMDI0LTA2LTE5VDA2OjQ2OjEwLjY0MloiLCJkZWxldGVkQXQiOm51bGwsImlhdCI6MTcxODc3OTU4MH0.gV_Z6LWFVYQD2uqNGc2czzvY-4vPveT1AtXJgrMxJMY";
+const endpoint = import.meta.env.VITE_ENDPOINT;
+let token = localStorage.getItem("token");
+
 
 const initCamera = async () => {
   try {
@@ -162,16 +140,45 @@ const deleteImage = () => {
   initCamera();
 };
 
+const renderAbsen = async (jadwal = null) => {
+  try {
+    if (!jadwal) {
+      jadwal = new Date();
+    }
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    jadwal = jadwal.toLocaleDateString('id-ID', options).split('/').reverse().join('-');
+    const res = await axios.get(`${endpoint}/absensi/detail_by_date`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      params:{jadwal}
+    });
+    const data = res.data?.data;
+    console.log(data)
+
+    absensi.value = data
+  } catch (error) {
+    const data = error.response?.data.errors;
+    if (data) {
+      toast.error(`CODE ${data.code} : ${data.message}`, {
+        autoClose: 2000,
+      });
+    }
+    console.log(error);
+  }
+};
+
 const saveImage = async () => {
   const blob = await fetch(capturedImage.value).then((res) => res.blob());
   const formData = new FormData();
   formData.append("foto_absensi", blob, "captured-image.png");
   formData.append("keterangan", description.value);
-  formData.append("absensi_id", "cTzaIqH8e_cO_hGvCupqK");
+  formData.append("absensi_id", absensi.value.id);
 
   try {
     const res = await axios.post(
-      `http://localhost:9001/absensi/add`,
+      `${endpoint}/absensi/add`,
       formData,
       {
         headers: {
@@ -180,26 +187,30 @@ const saveImage = async () => {
         },
       }
     );
-    console.log(res);
     const result = res.data;
     if (res.status == 200) {
       toast.success(`${result.message}`, {
         autoClose: 2000,
       });
+      setTimeout(() => {
+        router.push('/')
+      }, 2500);
+      
     }
   } catch (error) {
-    console.log(error.response?.data);
     const data = error.response?.data.errors;
     if (data) {
       toast.error(`CODE ${data.code} : ${data.message}`, {
         autoClose: 2000,
       });
     }
+    console.log(error);
   }
 };
 
 onMounted(() => {
   initCamera();
+  renderAbsen()
 });
 
 onBeforeUnmount(() => {

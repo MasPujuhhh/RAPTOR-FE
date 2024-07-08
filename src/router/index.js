@@ -200,7 +200,7 @@ const router = createRouter({
     {
       path: "/admin/absensi",
       name: "admin-absensi",
-      component: () => import("../views/admin/tugas/Tugas.vue"),
+      component: () => import("../views/admin/absensi/Absensi.vue"),
     },
     {
       path: "/admin/pengumuman",

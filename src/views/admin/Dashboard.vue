@@ -85,13 +85,14 @@
             <hr style="margin: 0px" />
           </div>
           <div>
+            {{ dashboard }}
             <div v-if="!dashboard.jadwal" class="notif">
               <div class="title-notif">
                 <h5>Jadwal Belum Dibuka</h5>
                 <i class="bi bi-bell-fill" style="font-size: 30px"></i>
               </div>
               <div class="d-grid gap-2">
-                <button class="btn btn-warning" @click="openSchedule(date)" type="button">Open Schedule</button>
+                <button class="btn btn-warning" @click="openSchedule()" type="button">Open Schedule</button>
               </div>
             </div>
             <div class="card-container">
@@ -198,8 +199,13 @@ const renderDashboard = async (jadwal = null) => {
   }
 };
 
-const openSchedule = async (d) => {
-  let payload = { jadwal: d.toISOString().split('T')[0] }
+const openSchedule = async (jadwal = null) => {
+  if (!jadwal) {
+    jadwal = new Date()
+  }
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  jadwal = jadwal.toLocaleDateString('id-ID', options).split('/').reverse().join('-');
+  let payload = { jadwal }
   try {
     let res = await axios.post(`${endpoint}/dashboard/open_schedule`, payload, {
       headers: {
@@ -208,7 +214,7 @@ const openSchedule = async (d) => {
       },
     });
     toast.success('berhasil membuka jadwal', { autoClose: 2000 });
-    await renderDashboard(d);
+    await renderDashboard();
   } catch (error) {
     const data = error.response?.data;
     if (data) {
