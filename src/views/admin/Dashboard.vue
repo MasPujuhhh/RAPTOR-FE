@@ -85,14 +85,13 @@
             <hr style="margin: 0px" />
           </div>
           <div>
-            {{ dashboard }}
             <div v-if="!dashboard.jadwal" class="notif">
               <div class="title-notif">
                 <h5>Jadwal Belum Dibuka</h5>
                 <i class="bi bi-bell-fill" style="font-size: 30px"></i>
               </div>
               <div class="d-grid gap-2">
-                <button class="btn btn-warning" @click="openSchedule()" type="button">Open Schedule</button>
+                <button class="btn btn-warning" @click="openSchedule(date)" type="button">Open Schedule</button>
               </div>
             </div>
             <div class="card-container">
@@ -107,7 +106,7 @@
                       <div class="ms-2 me-auto text-start">
                         <div class="fw-bold" style="margin: 0;">{{ item.judul }}</div>
                         <div><p>{{ item.nama_lengkap }} ({{ item.alias }})</p></div>
-                        <div>{{ item.deskripsi }}</div>
+                        <div>{{ item.deskripsi?.length > 200 ? `${item.deskripsi?.substring(0, 200)}...` : item.deskripsi }}</div>
                       </div>
                       <span class="badge bg-secondary">{{ moment(item.createdAt).format('L') }}, {{ moment(item.createdAt).format('HH:mm') }}</span>
                     </li>
@@ -122,8 +121,8 @@
                   <i class="bi bi-pie-chart" style="margin-left: 0.5rem; font-size: 30px;"></i>
                 </div>
                 <div class="body-card-content">
-                  <canvas id="chartAbsen" ref="chartAbsen" style="width: 25rem; height: 25rem"></canvas>
-                  <div v-if="dashboard.absensi?.masuk == null">
+                  <canvas  v-if="dashboard.absensi?.masuk || dashboard.absensi?.wfh || dashboard.absensi?.izin_sakit || dashboard.absensi?.tanpa_keterangan" id="chartAbsen" ref="chartAbsen" style="width: 25rem; height: 25rem"></canvas>
+                  <div v-if="!dashboard.absensi?.masuk && !dashboard.absensi?.wfh && !dashboard.absensi?.izin_sakit && !dashboard.absensi?.tanpa_keterangan">
                     <p>Tidak Ada Data</p>
                   </div>
                 </div>
@@ -187,6 +186,9 @@ const renderDashboard = async (jadwal = null) => {
 
     const data = res.data?.data;
     dashboard.value = data;
+
+    console.log(data)
+
     await renderPieAbsen(data.absensi);
   } catch (error) {
     const data = error.response?.data;
@@ -227,16 +229,23 @@ const openSchedule = async (jadwal = null) => {
 }
 
 const renderPieAbsen = async (absensi) => {
+  console.log(absensi)
   try {
-    let data_absen = [0, 0, 0];
+    let data_absen = [0, 2, 1, 1, 0];
     if (absensi.masuk) {
       data_absen[0] = absensi.masuk;
     }
-    if (absensi.wfh || absensi.izin_sakit) {
-      data_absen[2] = absensi.wfh || 0;
+    if (absensi.wfh ) {
+      data_absen[1] = absensi.wfh
+    }
+    if (absensi.izin) {
+      data_absen[2] = absensi.izin;
+    }
+    if (absensi.sakit) {
+      data_absen[3] = absensi.sakit;
     }
     if (absensi.tanpa_keterangan) {
-      data_absen[1] = absensi.tanpa_keterangan;
+      data_absen[4] = absensi.tanpa_keterangan;
     }
 
     if (nilai_chartAbsen.value) {
@@ -244,12 +253,12 @@ const renderPieAbsen = async (absensi) => {
     }
 
     const data = {
-      labels: ['Masuk', 'Tanpa Keterangan', 'WFH/ Izin/ Sakit'],
+      labels: ['Masuk', 'WFH', 'Izin', 'Sakit', 'Tanpa Keterangan'],
       datasets: [
         {
           data: data_absen,
-          backgroundColor: ['#50C878', '#FF6384', '#FFCE56'],
-          hoverBackgroundColor: ['#50C878', '#FF6384', '#FFCE56'],
+          backgroundColor: ['#50C878', '#00BFFF', '#FFCE56','#4B0082', '#FF6384'],
+          hoverBackgroundColor: ['#50C878', '#00BFFF', '#FFCE56','#4B0082', '#FF6384'],
         },
       ],
     };

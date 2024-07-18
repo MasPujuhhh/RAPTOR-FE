@@ -166,22 +166,8 @@ onMounted(() => {
         </div>
       </div>
       <div class="col col-8 d-flex justify-content-center p-3">
-        <div
-          class="d-flex flex-wrap justify-content-center bg-secondary w-100 p-4 rounded-3 shadow gap-3"
-          style="overflow-y: scroll"
-        >
-          <div
-            class="bg-white d-flex flex-column justify-content-between shadow rounded-3 p-3"
-            style="width: 45%; min-height: 25%; max-height: 30%"
-            v-for="task in tasks"
-          >
-            <div
-              class="d-flex gap-2 justify-content-between border-bottom border-black py-1 h-25"
-            >
-              <h6>{{ task.name }}</h6>
-              <h6>{{ task.label }}</h6>
-              <h6>{{ moment(task.created_at).format("ll") }}</h6>
-            </div>
+        <div class="d-flex flex-wrap justify-content-center bg-secondary w-100 p-4 rounded-3 shadow gap-3" style="overflow-y: scroll">
+          <div  class="bg-white d-flex flex-column justify-content-between shadow rounded-3 p-3" style="width: 45%; min-height: 25%; max-height: 30%" v-for="task in tasks">
             <div class="h-50 overflow-y-scroll" style="max-height: 1000px">
               <p>
                 Lorem Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -315,9 +301,13 @@ onMounted(() => {
                 quis at nihil! Totam, quia?
               </p>
             </div>
-            <div
-              class="d-flex justify-content-between align-items-center border-top border-black pt-3"
-            >
+            <div class="d-flex gap-2 justify-content-between border-top border-black pt-2">
+              <img src="" alt="" srcset="">
+              <h6>{{ task.name }}</h6>
+              <h6>{{ task.label }}</h6>
+              <h6>{{ moment(task.created_at).format("ll") }}</h6>
+            </div>
+            <div class="d-flex justify-content-between align-items-center border-top border-black pt-3" >
               <button class="btn btn-warning text-white">edit</button>
               <button class="btn btn-danger">delete</button>
             </div>

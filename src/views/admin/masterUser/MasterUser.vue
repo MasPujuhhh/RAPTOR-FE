@@ -219,7 +219,7 @@
                       
 
                     <!-- EDIT -->
-                    <button class="btn btn-warning btn-sm me-2" type="button" data-bs-toggle="modal" data-bs-target="#editUserModal" @click="getDetailUser(user.id)">
+                    <button v-if="me?.nama == user?.head || me?.id == user.id || is_superadmin" class="btn btn-warning btn-sm me-2" type="button" data-bs-toggle="modal" data-bs-target="#editUserModal" @click="getDetailUser(user.id)">
                           <i class="bi bi-pencil"></i>
                     </button>
                     <!-- modal edit -->
@@ -290,7 +290,7 @@
                     </div>
 
                     <!-- DELETE -->
-                    <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#deleteUserModal" @click="getDetailUser(user.id)"> 
+                    <button v-if="me?.nama == user?.head || me?.id == user.id || is_superadmin" class="btn btn-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#deleteUserModal" @click="getDetailUser(user.id)"> 
                       <i class="bi bi-trash"></i>
                     </button>
                     <!-- modal delete -->
@@ -365,6 +365,8 @@ const filter = ref({
 });
 const metadata = ref();
 const roles = ref([])
+const me = ref()
+const is_superadmin = ref(false)
 
 const is_admin = localStorage.getItem("authAdmin");
 const token = localStorage.getItem("token");
@@ -381,6 +383,29 @@ const newUser = ref({
 });
 
 const new_pass = ref({})
+
+const renderMe = async () => {
+  try {
+    const res = await axios.get(`${endpoint}/user/detail_by_token`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    me.value = res.data.data
+    if (me.value.nama == 'SPR') {
+      is_superadmin.value = true
+    }
+  } catch (error) {
+    const data = error.response?.data.errors;
+    if (data) {
+      toast.error(`CODE ${data.code} : ${data.message}`, {
+        autoClose: 2000,
+      });
+    }
+    console.log(error);
+  }
+};
 
 const getRole = async () => {
   try {
@@ -590,6 +615,7 @@ const handlePageChange = async (page) => {
 onMounted(() => {
   getListUsers();
   getRole()
+  renderMe()
 });
 </script>
 

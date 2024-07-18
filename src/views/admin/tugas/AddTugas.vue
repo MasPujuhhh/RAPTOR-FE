@@ -262,7 +262,7 @@ const getRole = async () => {
 
 const getUser = async () => {
   try {
-    const res = await axios.get(`${endpoint}/user/all`, {
+    const res = await axios.get(`${endpoint}/user/all_by_division`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

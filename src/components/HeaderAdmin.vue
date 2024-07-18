@@ -21,6 +21,11 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
+          <li class="nav-item me-2" style="cursor: pointer">
+            <div class="nav-link" @click="PortalUser">
+              <i class="bi bi-box-arrow-right me-1"></i>Portal User
+            </div>
+          </li>
           <li class="nav-item">
             <div class="nav-link">
               <i class="bi bi-person-circle"></i>&nbsp {{ user?.alias }}
@@ -70,6 +75,14 @@ import { ref,computed, onMounted, watch  } from 'vue';
       });
     }
     console.log(data);
+    }
+  };
+
+  const PortalUser = async () => {
+    try {
+      router.push({ path: "/" });
+    } catch (error) {
+      console.log(error);
     }
   };
 

@@ -11,34 +11,44 @@ const router = createRouter({
       component: () => import("../views/user/HomeView.vue"),
     },
     {
-      path: "/logbook",
+      path: "/daily-report",
       name: "logbok",
-      component: () => import("../views/user/UserLogbook.vue"),
+      component: () => import("../views/user/UserDaily.vue"),
     },
     {
-      path: "/logbook/:id",
-      name: "logbook-id",
-      component: () => import("../views/user/UserLogbookDetail.vue"),
+      path: "/daily-report/:id",
+      name: "daily-report-id",
+      component: () => import("../views/user/UserDaily.vue"),
     },
     {
       path: "/logbook/edit/:id",
       name: "logbook-edit-date",
-      component: () => import("../views/user/UserLogbookEdit.vue"),
+      component: () => import("../views/user/UserDaily.vue"),
     },
     {
-      path: "/todo",
-      name: "todo",
-      component: () => import("../views/user/UserTodo.vue"),
+      path: "/tugas",
+      name: "tugas",
+      component: () => import("../views/user/UserTugas.vue"),
     },
     {
-      path: "/sertifikat",
-      name: "sertifikat",
-      component: () => import("../views/user/UserCertificate.vue"),
+      path: "/tugas/detail/:id",
+      name: "tugas-detail",
+      component: () => import("../views/user/UserTugasDetail.vue"),
     },
     {
-      path: "/about",
-      name: "about",
-      component: () => import("../views/user/AboutView.vue"),
+      path: "/absensi",
+      name: "absensi",
+      component: () => import("../views/user/UserAbsensi.vue"),
+    },
+    {
+      path: "/pengumuman",
+      name: "pengumuman",
+      component: () => import("../views/user/UserPengumuman.vue"),
+    },
+    {
+      path: "/pengumuman/:id",
+      name: "pengumuman-detail",
+      component: () => import("../views/user/UserPengumumanDetail.vue"),
     },
     {
       path: "/login",
@@ -91,66 +101,13 @@ const router = createRouter({
       component: () => import("../views/user/KategoriView.vue"),
     },
 
+
     // ADMIN
     {
       path: "/admin",
-      name: "dashboard-admin",
+      name: "admin",
       component: () => import("../views/admin/Dashboard.vue"),
     },
-    // {
-    //   path: "/admin/logbook",
-    //   name: "admin-logbook",
-    //   component: () =>
-    //     import("../views/admin/logbook/MainLogbook.vue"),
-    // },
-    // {
-    //   path: "/admin/logbook/:id",
-    //   name: "admin-logbook-id",
-    //   component: () =>
-    //     import("../views/admin/logbook/LogbookDetail.vue"),
-    // },
-    // {
-    //   path: "/admin/activity",
-    //   name: "admin-activity",
-    //   component: () =>
-    //     import("../views/admin/activity/MainActivity.vue"),
-    // },
-    // {
-    //   path: "/admin/attendance",
-    //   name: "admin-attendance",
-    //   component: () =>
-    //     import("../views/admin/attendance/MainAttendance.vue"),
-    // },
-    // {
-    //   path: "/admin/certificate",
-    //   name: "admin-certificate",
-    //   component: () =>
-    //     import("../views/admin/certificate/MainCertificate.vue"),
-    // },
-    // {
-    //   path: "/admin/certificate/add",
-    //   name: "admin-certificate-add",
-    //   component: () =>
-    //     import("../views/admin/certificate/AddCertificate.vue"),
-    // },
-    // {
-    //   path: "/admin/certificate/edit/:id",
-    //   name: "admin-certificate-edit",
-    //   component: () =>
-    //     import("../views/admin/certificate/EditCertificate.vue"),
-    // },
-    // {
-    //   path: "/admin/task",
-    //   name: "admin-task",
-    //   component: () =>
-    //     import("../views/admin/task/MainTask.vue"),
-    // },
-    // {
-    //   path: "/admin/task/add",
-    //   name: "admin-task-add",
-    //   component: () =>
-    //     import("../views/admin/task/AddTask.vue"),
-    // },
     {
       path: "/admin/master-user",
       name: "admin-user",
@@ -210,11 +167,11 @@ const router = createRouter({
     {
       path: "/admin/daily-report",
       name: "admin-daily-report",
-      component: () => import("../views/admin/tugas/Tugas.vue"),
+      component: () => import("../views/admin/daily_report/DailyReport.vue"),
     },
     {
-      path: "/absen",
-      name: "absen",
+      path: "/absen/:id",
+      name: "absen-detail",
       component: () => import("../views/admin/Tes.vue"),
     },
     {
@@ -230,25 +187,33 @@ const router = createRouter({
   ],
 });
 
-// router.beforeEach((to, from, next) => {
-//   const isAuthUser = JSON.parse(localStorage.getItem("authUser"));
-//   const isAuthAdmin = JSON.parse(localStorage.getItem("authAdmin"));
-//   // console.log(isAuthAdmin)
+router.beforeEach((to, from, next) => {
+  const is_admin = JSON.parse(localStorage.getItem("authAdmin"));
+  const token = localStorage.getItem("token") || null
 
-//   // console.log(to.name === "login" && isAuthAdmin);
-//   // console.log("from", from);
-//   // if (to.path === "http://localhost:8001/auth/google") next();
-//   // if (to.name === "home-user") next();
-//   if (to.name === "register") next();
-//   // if (to.name === "listProduct") next();
-//   // if (to.name === "kategori") next();
-//   // if (to.name === "login-google") next();
-//   if (isAuthAdmin) next();
+  // gapunya token
+  if (to.name != 'login' && !token) {
+    next({name : "login"})
+  }
 
-//   if (to.name !== "login" && !isAuthUser) next({ name: "login" });
-//   if (to.name === "login" && isAuthUser) next({ name: "home-user" });
-//   if (to.name === "login" && isAuthAdmin) next({ name: "dashboard-admin" });
-//   next();
-// });
+  // user gapunya akses ke admin
+  if ((to.name=='admin'||to.name=='admin-user'||to.name=='admin-tags'||to.name=='admin-role'||to.name=='admin-category'||
+       to.name=='admin-label'||to.name=='admin-tugas'||to.name=='admin-tugas-add'||to.name=='admin-tugas-detail'||to.name=='admin-tugas-edit'||
+       to.name=='admin-absensi'||to.name=='admin-pengumuman'||to.name=='admin-daily-report') && !is_admin) {
+    next({name : "login"})
+  }
+
+  // udah login tapi ke login admin
+  if (to.name == 'login' && token && !is_admin) {
+    next({name : "home-user"})
+  }
+
+  // udah login tapi ke login user
+  if (to.name == 'login' && token && is_admin) {
+    next({name : "admin"})
+  }
+  
+  next();
+});
 
 export default router;

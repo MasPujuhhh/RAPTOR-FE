@@ -22,6 +22,12 @@
         >
 
         <div style="display: flex; height: 100%; align-items: center;">
+          <div v-if="is_admin" style="height: 3rem; align-items: center; cursor: pointer;" @click="PortalAdmin">
+              <i style="font-size:30px;" class="bi bi-box-arrow-right me-1"></i>
+          </div>
+          <div v-if="is_admin" style=" height: 2rem; align-items: center; margin-right: 2rem;">
+            <p style="height: 100%; font-size: larger; align-items: center; cursor: pointer;" @click="PortalAdmin">Portal Admin</p>
+          </div>
 
           <div style="height: 3rem; align-items: center;">
             <i
@@ -32,19 +38,14 @@
               aria-expanded="false"
 
             ></i>
-            <ul style="position: absolute; left: 83%" class="dropdown-menu">
-              <li><a class="dropdown-item" @click="logbook">Loogbook</a></li>
-              <li><a class="dropdown-item" @click="todo">To-do</a></li>
-              <li><a class="dropdown-item" @click="certificate">Sertifikat</a></li>
-            </ul>
           </div>
-
           <div style=" height: 2rem; align-items: center; margin-left: 0.5rem;">
-            <p style="height: 100%; font-size: larger; align-items: center; cursor: pointer;" data-bs-toggle="dropdown">activity</p>
+            <p style="height: 100%; font-size: larger; align-items: center; cursor: pointer;" data-bs-toggle="dropdown">Aktivitas</p>
             <ul style="position: absolute; left: 83%" class="dropdown-menu">
-              <li><a class="dropdown-item" @click="logbook">Loogbook</a></li>
-              <li><a class="dropdown-item" @click="todo">To-do</a></li>
-              <li><a class="dropdown-item" @click="certificate">Sertifikat</a></li>
+              <li style="cursor: pointer;"><a class="dropdown-item" @click="DailyReport">Daily Report</a></li>
+              <li style="cursor: pointer;"><a class="dropdown-item" @click="Tugas">Tugas</a></li>
+              <li style="cursor: pointer;"><a class="dropdown-item" @click="Absensi">Absensi</a></li>
+              <li style="cursor: pointer;"><a class="dropdown-item" @click="Pengumuman">Pengumuman</a></li>
             </ul>
           </div>
 
@@ -57,14 +58,14 @@
               aria-expanded="false"
 
             ></i>
-            <ul style="position: absolute; left: 90%" class="dropdown-menu">
-              <li><a class="dropdown-item" @click="pindahProfile">Profile</a></li> 
+            <ul style="position: absolute; left: 90%" class="dropdown-menu"> 
+              <li><a class="dropdown-item" @click="pindahProfile">Profil</a></li> 
               <li><a class="dropdown-item" @click="logout">Logout</a></li>
             </ul>
           </div>
 
           <div style="height: 2rem; align-items: center; cursor: pointer; margin-left: 0.5rem;">
-            <p style="height: 100%; font-size: larger; align-items: center;" data-bs-toggle="dropdown">{{ nama_lengkap }}</p>
+            <p style="height: 100%; font-size: larger; align-items: center;" data-bs-toggle="dropdown">{{ me?.nama_lengkap }}</p>
             <ul style="position: absolute; left: 90%" class="dropdown-menu">
               <li><a class="dropdown-item" @click="pindahProfile">Profile</a></li> 
               <li><a class="dropdown-item" @click="logout">Logout</a></li>
@@ -89,14 +90,16 @@
   // const { token } = storeToRefs(store);
   const { simpanKategori } = store;
   const nama_lengkap = ref()
+  const me = ref()
 
   let kategori = ref({});
-  let valid = localStorage.getItem("tokenUser");
   let endpoint = import.meta.env.VITE_ENDPOINT;
 
   const router = useRouter();
 
-  let token = localStorage.getItem("tokenUser") || localStorage.getItem("token")  ;
+  let is_admin = ref(false)
+  let token = localStorage.getItem("token");
+  let check_admin = localStorage.getItem("authAdmin")
 
   const getUser = async () => {
     try {
@@ -108,6 +111,39 @@
     }
   }
 
+  const PortalAdmin = async () => {
+    try {
+      router.push({ path: "/admin" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const renderMe = async () => {
+    try {
+      const res = await axios.get(
+        `${endpoint}/user/detail_by_token`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      me.value = res.data?.data;
+      if (check_admin) {
+        is_admin.value = true
+      }
+    } catch (error) {
+      const data = error.response?.data.errors;
+      if (data) {
+        toast.error(`CODE ${data.code} : ${data.message}`, {
+          autoClose: 2000,
+        });
+      }
+      console.log(data);
+      }
+    };
+
   const pindahProfile = async () => {
     try {
       router.push({ path: "/profile" });
@@ -116,25 +152,33 @@
     }
   };
 
-  const logbook = async () => {
+  const DailyReport = async () => {
     try {
-      router.push({ path: "/logbook" });
+      router.push({ path: "/daily-report" });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const todo = async () => {
+  const Tugas = async () => {
     try {
-      router.push({ path: "/todo" });
+      router.push({ path: "/tugas" });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const certificate = async () => {
+  const Absensi = async () => {
     try {
-      router.push({ path: "/sertifikat" });
+      router.push({ path: "/absensi" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const Pengumuman = async () => {
+    try {
+      router.push({ path: "/pengumuman" });
     } catch (error) {
       console.log(error);
     }
@@ -150,6 +194,7 @@
 
   onMounted(() => {
     getUser()
+    renderMe()
   });
 </script>
 

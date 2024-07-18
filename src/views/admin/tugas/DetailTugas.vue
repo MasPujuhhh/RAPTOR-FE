@@ -126,34 +126,40 @@
               <div class="row mb-3">
                 <div class="col-md-12">
                   <h5>Sub Tugas</h5>
-                  <div v-for="(sub, index) in tugas.sub_tugas" :key="index" class="subtask-item mb-3">
-                    <div class="subtask-number">
-                      <h3>{{ index + 1 }}.</h3>
+                  <div v-for="(sub, index) in tugas.sub_tugas" :key="index" class="subtask-item mb-3 d-flex flex-column">
+                    <div class="d-flex w-100">
+                      <div class="subtask-number">
+                        <h3>{{ index + 1 }}.</h3>
+                      </div>
+                      <div class="subtask-details d-flex w-100">
+                        <div class="form-group me-2">
+                          <input type="text" id="subNamaTugas" class="form-control" v-model="sub.judul" placeholder="Judul Sub Tugas" disabled>
+                        </div>
+                        <div class="form-group me-2">
+                          <select id="addCategory" class="form-select" v-model="sub.category_id" disabled>
+                            <option disabled>Pilih Kategori</option>
+                            <option v-for="kategori in kategori_children_option" :key="kategori.id" :value="kategori.id">
+                              {{ kategori.deskripsi }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="form-group me-2">
+                          <input type="date" class="form-control" id="addTenggat" v-model="sub.tanggal_selesai" disabled>
+                        </div>
+                        <div class="form-group me-2">
+                          <select id="addCategory" class="form-select" v-model="sub.user_id" disabled>
+                            <option disabled>Pilih User</option>
+                            <option v-for="user in tugas.users" :key="user.id" :value="user.id">
+                              {{ user.nama_lengkap }} ({{ user.nama_role }})
+                            </option>
+                          </select>
+                        </div>
+                        <button v-if="sub.status == ''" class="btn btn-danger" @click="hapusSubTugasFromAPI(sub.sub_tugas_id)"><i class="bi bi-trash"></i></button>
+                        <button v-if="sub.status !=''" class="btn btn-success" disabled><i class="bi bi-check-circle"></i></button>
+                      </div>
                     </div>
-                    <div class="subtask-details d-flex w-100">
-                      <div class="form-group me-2">
-                        <input type="text" id="subNamaTugas" class="form-control" v-model="sub.judul" placeholder="Judul Sub Tugas">
-                      </div>
-                      <div class="form-group me-2">
-                        <select id="addCategory" class="form-select" v-model="sub.category_id">
-                          <option disabled>Pilih Kategori</option>
-                          <option v-for="kategori in kategori_children_option" :key="kategori.id" :value="kategori.id">
-                            {{ kategori.deskripsi }}
-                          </option>
-                        </select>
-                      </div>
-                      <div class="form-group me-2">
-                        <input type="date" class="form-control" id="addTenggat" v-model="sub.tanggal_selesai">
-                      </div>
-                      <div class="form-group me-2">
-                        <select id="addCategory" class="form-select" v-model="sub.user_id">
-                          <option disabled>Pilih User</option>
-                          <option v-for="user in tugas.users" :key="user.id" :value="user.id">
-                            {{ user.nama_lengkap }} ({{ user.nama_role }})
-                          </option>
-                        </select>
-                      </div>
-                      <button class="btn btn-danger" @click="hapusSubTugasFromAPI(sub.sub_tugas_id)"><i class="bi bi-trash"></i></button>
+                    <div style="width: 92%; margin: 0; padding: 0;">
+                      <p v-if="sub.alasan" class="text-danger mb-0">terlambat karena "{{ sub.alasan }}"</p>
                     </div>
                   </div>
                   <div v-for="(sub, index) in new_sub_tugas" :key="index" class="subtask-item mb-3">
@@ -179,8 +185,7 @@
                         <select id="addCategory" class="form-select" v-model="sub.user_id">
                           <option disabled>Pilih User</option>
                           <option v-for="user in tugas.users" :key="user.id" :value="user.id">
-                            {{ user }}
-                            {{ user.nama_lengkap }} ({{ user.nama }})
+                            {{ user.nama_lengkap }} ({{ user.nama_role }})
                           </option>
                         </select>
                       </div>

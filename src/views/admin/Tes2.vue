@@ -1,30 +1,42 @@
 <template>
-  <v-select :options="books" label="title">
-    <template #option="{ option }">
-      <h3 style="margin: 0">{{ option.title }}</h3>
-      <em>{{ option.author.firstName }} {{ option.author.lastName }}</em>
-    </template>
-  </v-select>
+  <div>
+    <h1>HTML Geolocation</h1>
+    <p>Click the button to get your coordinates.</p>
+    <button @click="getLocation">Try It</button>
+    <p v-html="demo"></p>
+
+    <iframe v-if="showmap" :src="`https://www.google.com/maps?q=${location?.latitude},${location.longitude}&hl=es;z=14&output=embed`" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 
-const books = ref([
-  {
-    title: "Old Man's War",
-    author: {
-      firstName: 'John',
-      lastName: 'Scalzi',
-    },
-  },
-]);
+const showmap = ref(false)
+const demo = ref('');
+const location = ref({
+  latitude:null,
+  longitude:null
+})
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    demo.value = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  demo.value = `Latitude: ${position.coords.latitude}<br>Longitude: ${position.coords.longitude}`;
+  location.value.latitude = position.coords.latitude
+  location.value.longitude = position.coords.longitude
+  showmap.value = true
+}
 </script>
 
-<!-- Optionally, you can import styles directly in your Vue 3 setup -->
-<style>
-/* Add scoped styles here if needed */
-@import "vue-select/dist/vue-select.css";
+<style scoped>
+/* Add any styles here if needed */
 </style>
-
-
