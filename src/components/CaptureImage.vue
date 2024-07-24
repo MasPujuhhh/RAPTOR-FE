@@ -1,39 +1,122 @@
 <template>
   <div class="container-fluid d-flex justify-content-center">
     <!-- STATUS -->
-    <div class="d-flex flex-column bg-primary justify-content-center p-4 gap-3 bg-white shadow rounded-3">
-      <div class="d-flex flex-column align-items-center justify-content-center bg-white shadow rounded-3 p-4">
-        <p class="fs-5 fw-semibold text-uppercase border-bottom border-bottom-secondary pb-3 w-100" style="letter-spacing: 0.3px">
-          Status
+    <div
+      class="d-flex flex-column bg-primary justify-content-center p-4 gap-3 bg-white shadow rounded-3"
+      style="width: 35%"
+    >
+      <div class="w-100 d-flex">
+        <RouterLink to="/">
+          <button class="btn btn-secondary fw-medium text-lowercase py-2">
+            <i class="bi bi-arrow-left"></i>
+            Back
+          </button>
+        </RouterLink>
+      </div>
+      <div
+        class="d-flex flex-column align-items-center justify-content-center bg-white shadow rounded-3 p-4"
+      >
+        <p
+          class="fs-5 fw-semibold font- text-uppercase border-bottom border-bottom-secondary pb-3 w-100"
+          style="letter-spacing: 0.3px"
+        >
+          Absensi
         </p>
-        <div class="w-75 d-flex flex-row justify-content-between">
+        <div class="w-75 d-flex justify-content-between">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="status" value="masuk" id="masuk" v-model="status" />
-            <label class="form-check-label fs-5 fw-medium text-lowercase" for="masuk"> Masuk </label>
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              value="masuk"
+              id="masuk"
+              v-model="status"
+            />
+            <label
+              class="form-check-label fs-5 fw-medium text-lowercase"
+              for="masuk"
+              style="margin-top: -3px"
+            >
+              Masuk
+            </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="status" value="wfh" id="wfh" v-model="status" />
-            <label class="form-check-label fs-5 fw-medium text-lowercase" for="wfh"> WFH </label>
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              value="wfh"
+              id="wfh"
+              v-model="status"
+            />
+            <label
+              class="form-check-label fs-5 fw-medium text-lowercase"
+              for="wfh"
+              style="margin-top: -3px"
+            >
+              WFH
+            </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="status" value="izin" id="izin" v-model="status" />
-            <label class="form-check-label fs-5 fw-medium text-lowercase" for="izin"> Izin </label>
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              value="izin"
+              id="izin"
+              v-model="status"
+            />
+            <label
+              class="form-check-label fs-5 fw-medium text-lowercase"
+              for="izin"
+              style="margin-top: -3px"
+            >
+              Izin
+            </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="status" value="sakit" id="sakit" v-model="status" />
-            <label class="form-check-label fs-5 fw-medium text-lowercase" for="sakit"> Sakit </label>
+            <input
+              class="form-check-input"
+              type="radio"
+              name="status"
+              value="sakit"
+              id="sakit"
+              v-model="status"
+            />
+            <label
+              class="form-check-label fs-5 fw-medium text-lowercase"
+              for="sakit"
+              style="margin-top: -3px"
+            >
+              Sakit
+            </label>
           </div>
         </div>
       </div>
 
-      <img :src="capturedImage" v-if="capturedImage" class="captured-image rounded-3" />
+      <img
+        :src="capturedImage"
+        v-if="capturedImage"
+        class="captured-image rounded-3"
+      />
 
       <!-- FOTO (Kamera atau Form Input) -->
-      <div v-if="(status === 'masuk' || status === 'wfh') && !capturedImage" class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3">
+      <div
+        v-if="(status === 'masuk' || status === 'wfh') && !capturedImage"
+        class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3"
+      >
         <video ref="video" class="video rounded-3" autoplay></video>
-        <button class="btn btn-secondary fw-medium text-lowercase py-2" @click="captureImage">Capture</button>
+        <button
+          class="btn btn-secondary fw-medium text-lowercase py-2"
+          @click="captureImage"
+        >
+          Capture
+        </button>
       </div>
-      <div v-else-if="status === 'sakit' || status === 'izin'" class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3">
+      <div
+        v-else-if="status === 'sakit' || status === 'izin'"
+        class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3"
+      >
         <input type="file" @change="handleFileUpload" class="form-control" />
       </div>
 
@@ -50,7 +133,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import { onBeforeRouteLeave } from 'vue-router';
+import { onBeforeRouteLeave } from "vue-router";
 import axios from "axios";
 import { toast } from "vue3-toastify";
 import { useRouter, useRoute } from "vue-router";
@@ -66,11 +149,11 @@ const captured = ref(false);
 const capturedImage = ref("");
 const status = ref();
 const absensi = ref({});
-const demo = ref('');
+const demo = ref("");
 const koordinat = ref({
-  latitude:null,
-  longitude:null
-})
+  latitude: null,
+  longitude: null,
+});
 let stream = null;
 const endpoint = import.meta.env.VITE_ENDPOINT;
 let token = localStorage.getItem("token");
@@ -111,7 +194,7 @@ const handleFileUpload = (event) => {
 const deleteImage = () => {
   captured.value = false;
   capturedImage.value = "";
-  if (status.value === 'masuk' || status.value === 'wfh') {
+  if (status.value === "masuk" || status.value === "wfh") {
     initCamera();
   }
 };
@@ -124,11 +207,11 @@ const renderAbsen = async (jadwal = null) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      params: { jadwal }
+      params: { jadwal },
     });
     const data = res.data?.data;
     absensi.value = data;
-    status.value = data.status
+    status.value = data.status;
   } catch (error) {
     const data = error.response?.data.errors;
     if (data) {
@@ -150,27 +233,33 @@ function getLocation() {
 
 function showPosition(position) {
   koordinat.value = {
-    latitude:position.coords.latitude,
-    longitude:position.coords.longitude
-  }
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude,
+  };
 }
 
 const saveImage = async () => {
-  getLocation()
+  getLocation();
   const blob = await fetch(capturedImage.value).then((res) => res.blob());
-  let jadwal = {}
-  if (route.query.tipe == 'check_in') {
-    jadwal.check_in = new Date()
+  let jadwal = {};
+  if (route.query.tipe == "check_in") {
+    jadwal.check_in = new Date();
   }
-  if (route.query.tipe == 'check_out') {
-    jadwal.check_out = new Date()
+  if (route.query.tipe == "check_out") {
+    jadwal.check_out = new Date();
   }
 
   const formData = new FormData();
   formData.append("foto", blob, "captured-image.png");
   formData.append("status", status.value);
   formData.append("absensi_id", absensi.value.id);
-  formData.append("koordinat", JSON.stringify({latitude: koordinat.value.latitude, longitude: koordinat.value.longitude}));
+  formData.append(
+    "koordinat",
+    JSON.stringify({
+      latitude: koordinat.value.latitude,
+      longitude: koordinat.value.longitude,
+    })
+  );
   if (jadwal.check_in) {
     formData.append("check_in", jadwal.check_in);
   }
@@ -178,9 +267,8 @@ const saveImage = async () => {
     formData.append("check_out", jadwal.check_out);
   }
 
-
-  console.group(koordinat.value)
-  console.log(...formData)
+  console.group(koordinat.value);
+  console.log(...formData);
 
   try {
     const res = await axios.post(`${endpoint}/absensi/add`, formData, {
@@ -195,7 +283,7 @@ const saveImage = async () => {
         autoClose: 2000,
       });
       setTimeout(() => {
-        router.push('/');
+        router.push("/");
       }, 2500);
     }
   } catch (error) {
@@ -215,19 +303,19 @@ const stopCamera = () => {
   }
 };
 
-watch(status,(new_status) => {
-  console.log(new_status)
-  if (new_status === 'masuk' || new_status === 'wfh') {
+watch(status, (new_status) => {
+  console.log(new_status);
+  if (new_status === "masuk" || new_status === "wfh") {
     deleteImage();
   }
-  if (new_status === 'izin' || new_status === 'sakit') {
+  if (new_status === "izin" || new_status === "sakit") {
     stopCamera();
   }
 });
 
 onMounted(() => {
   renderAbsen();
-  if (status.value === 'masuk' || status.value === 'wfh') {
+  if (status.value === "masuk" || status.value === "wfh") {
     initCamera();
   }
 });
