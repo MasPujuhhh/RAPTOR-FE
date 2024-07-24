@@ -26,16 +26,6 @@
 
           <!-- Filter Row -->
           <div class="row mb-3">
-            <!-- Button trigger modal -->                
-            <!-- <div class="col-md-2">
-              <label for="filterNamaTugas" class="form-label">Pilih User</label>
-              <select id="filterNamaTugas" class="form-select" v-model="filter.user">
-                <option value="" selected disabled>Pilih User</option>
-                <option v-for="user in users" :key="user.id" :value="{user_id:user.id, nama_lengkap:user.nama_lengkap}">
-                  {{ user.nama_lengkap }}
-                </option>
-              </select>
-            </div> -->
             <div class="col-md-2">
               <label for="filterNamaTugas" class="form-label">Pilih Tugas</label>
               <select id="filterNamaTugas" class="form-select" v-model="filter.tugas">
@@ -76,7 +66,6 @@
               <h6>Tanggal : {{ filter.tanggal_mulai && filter.tanggal_selesai ? `${moment(filter.tanggal_mulai).format('LL')} - ${moment(filter.tanggal_selesai).format('LL')}` : filter.tanggal_mulai ? `lebih dari `+filter.tanggal_mulai : filter.tanggal_selesai ? `kurang dari `+filter.tanggal_selesai : '' }} </h6>
               <h6>Jumlah : {{ d_reports?.length }}</h6>
             </div>
-            <button class="btn btn-success" id="filerHapus" type="button" @click="x"><i class="bi bi-file-earmark-spreadsheet"></i> Cetak</button>
           </div>
           <div class="table-responsive" style="width: 95%;">
             <p v-if="!d_reports?.length" class="text-danger">Silahkan Pilih Filter Terlebih dahulu!!</p>
@@ -105,10 +94,6 @@
                     <button class="btn btn-warning btn-sm" type="button"  data-bs-toggle="modal" data-bs-target="#exampleModal" @click="getDetailReport(report?.daily_report_id)"> 
                       <i class="bi bi-pencil"></i>
                     </button>
-
-                    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                      Launch demo modal
-                    </button> -->
                   </td>
                 </tr>
               </tbody>

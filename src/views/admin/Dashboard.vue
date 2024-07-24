@@ -91,7 +91,7 @@
                 <i class="bi bi-bell-fill" style="font-size: 30px"></i>
               </div>
               <div class="d-grid gap-2">
-                <button class="btn btn-warning" @click="openSchedule(date)" type="button">Open Schedule</button>
+                <button class="btn btn-warning" @click="openSchedule(date)" type="button">Buka Jadwal</button>
               </div>
             </div>
             <div class="card-container">

@@ -72,7 +72,7 @@
               :placeholder="user.email || 'Silahkan isi Email'"
             />
           </div>
-          <div class="col-md-6 fs-5">
+          <!-- <div class="col-md-6 fs-5">
             <label for="phone" class="form-label">Telepon</label>
             <input
               v-model="user.telepon"
@@ -81,9 +81,9 @@
               id="phone"
               :placeholder="user.telepon || 'Silahkan Isi Telepon'"
             />
-          </div>
+          </div> -->
           <div class="col-md-6 fs-5">
-            <label for="tipe" class="form-label">Tipe</label>
+            <label for="tipe" class="form-label">Status</label>
             <input
               v-model="user.tipe"
               type="text"
@@ -109,10 +109,10 @@
               style="width: 20%"
               v-if="busy == false"
               type="button"
-              @click="save"
+              @click="save(user.id)"
               class="btn btn-primary"
             >
-              Save Changes
+              Simpan Perubahan
             </button>
             <button
               style="width: 20%"
@@ -175,13 +175,13 @@
     }
   };
 
-  const save = async () => {
+  const save = async (id) => {
     busy.value = !busy.value;
     try {
       console.log(user.value)
 
       // console.log(token.value);
-      let res = await axios.put(`${endpoint}/user/edit_user`, user.value, {
+      let res = await axios.put(`${endpoint}/user/edit_user/${id}`, user.value, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

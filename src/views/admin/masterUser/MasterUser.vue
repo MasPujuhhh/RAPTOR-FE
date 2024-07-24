@@ -165,7 +165,7 @@
                   <td>{{ user.lokasi ? user.lokasi.charAt(0).toUpperCase() + user.lokasi?.slice(1) : '-' }}</td>
                   <td>
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" :checked="user.is_active">
+                      <input class="form-check-input" type="checkbox" :checked="user.is_active" disabled>
                     </div>
                   </td>
                   <td>

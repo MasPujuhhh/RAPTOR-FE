@@ -107,7 +107,7 @@
                     </button> -->
 
                     <!-- DELETE -->
-                    <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#deleteUserModal" @click="getDetailUser(user.id)"> 
+                    <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#deleteUserModal" @click="getDetailUser(tugas.id)"> 
                       <i class="bi bi-trash"></i>
                     </button>
                     <!-- modal delete -->
@@ -119,11 +119,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            <h6>Apkah ingin menghapus user {{ user_detail.nama_lengkap }} ??</h6> 
+                            <h6>Apkah ingin menghapus tugas {{ tugas_detail.judul }} ??</h6> 
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="button" class="btn btn-primary"  @click="hapusUser(user.id)" data-bs-dismiss="modal">Hapus</button>
+                            <button type="button" class="btn btn-primary"  @click="hapusTugas(tugas_detail.id)" data-bs-dismiss="modal">Hapus</button>
                           </div>
                         </div>
                       </div>
@@ -172,7 +172,7 @@ import "moment/locale/id";
 const endpoint = import.meta.env.VITE_ENDPOINT;
 
 const tugases = ref([]);
-const user_detail = ref({})
+const tugas_detail = ref({})
 const perPage = ref(10);
 const currentPage = ref(1);
 const filter = ref({
@@ -227,16 +227,16 @@ const getListTugas = async () => {
 const getDetailUser = async (id) => {
   try {
     const res = await axios.get(
-      `${endpoint}/user/detail_by_id/${id}`, {
+      `${endpoint}/tugas/detail/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }
     );
-    user_detail.value = res.data?.data;
+    tugas_detail.value = res.data?.data;
   } catch (error) {
-    const data = error.response?.data;
+    const data = error.response?.data.errors;
     if (data) {
       toast.error(`CODE ${data.code} : ${data.message}`, {
         autoClose: 2000,
@@ -283,73 +283,19 @@ const resetFilters = async () => {
   await getListTugas();
 };
 
-const submitUser = async () => {
-  try {
-    getRoleName(newUser.value.role_alias)
-    console.log(newUser.value)
-    const res = await axios.post(
-      `${endpoint}/user/create_user`, newUser.value, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    showModal.value = false;
-    await getListTugas();
-    toast.success('Berhasil Menambahkan User', {
-      autoClose: 2000,
-    });
-    newUser.value = {}
-  } catch (error) {
-    const data = error.response?.data.errors;
-    if (data) {
-      toast.error(`CODE ${data.code} : ${data.message}`, {
-        autoClose: 2000,
-      });
-    }
-    console.log(data);
-  }
-};
 
-const editUser = async (id) => {
-  try {
-    getRoleName(user_detail.value.role_alias);
-    const res = await axios.put(
-      `${endpoint}/user/edit_user/${id}`, user_detail.value, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    toast.success('Berhasil Mengupdate User', {
-      autoClose: 2000,
-    });
-    await getListTugas();
-    await getDetailUser(id);
-  } catch (error) {
-    const data = error.response?.data.errors;
-    if (data) {
-      toast.error(`CODE ${data.code} : ${data.message}`, {
-        autoClose: 2000,
-      });
-    }
-  }
-};
-
-const hapusUser = async (id) => {
+const hapusTugas = async (id) => {
   try {
     console.log('jalann')
     const res = await axios.delete(
-      `${endpoint}/user/delete_user/${id}`, user_detail.value, {
+      `${endpoint}/tugas/delete_tugas/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }
     );
-    toast.success('Berhasil Menghapus User', {
+    toast.success('Berhasil Menghapus Tugas', {
       autoClose: 2000,
     });
     await getListTugas();
@@ -373,13 +319,3 @@ onMounted(() => {
   getListTugas();
 });
 </script>
-
-<!-- <style>
-.profile-pic {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    margin-top: 20px;
-  }
-</style> -->

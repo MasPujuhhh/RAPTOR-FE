@@ -145,6 +145,7 @@ function getLocation() {
     navigator.geolocation.getCurrentPosition(showPosition);
   } else {
     demo.value = "Geolocation is not supported by this browser.";
+    console.log('geo error')
   }
 }
 
@@ -153,6 +154,7 @@ function showPosition(position) {
     latitude:position.coords.latitude,
     longitude:position.coords.longitude
   }
+  console.log('koordinat', koordinat)
 }
 
 const saveImage = async () => {
