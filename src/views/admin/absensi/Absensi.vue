@@ -20,7 +20,7 @@
           class="container-content"
         >
         <div>
-            <h2>Absensi</h2>
+            <h2>Presensi</h2>
             <hr style="margin-bottom: 0.3rem;">
             <hr style="margin-top: 0.3rem;">
           </div>
@@ -63,8 +63,8 @@
           <!-- User List Table -->
           <div v-if="absens?.length != 0" class="d-flex justify-content-between w-75 mt-4">
             <div class="d-flex justify-content-between w-75">
-              <h6>Nama Lengkap : {{ filter.user.nama_lengkap }}</h6>
-              <h6>Tanggal : {{ filter.tanggal_mulai && filter.tanggal_selesai ? `${moment(filter.tanggal_mulai).format('LL')} - ${moment(filter.tanggal_selesai).format('LL')}` : filter.tanggal_mulai ? `lebih dari `+filter.tanggal_mulai : filter.tanggal_selesai ? `kurang dari `+filter.tanggal_selesai : '' }} </h6>
+              <h6>Nama Lengkap : {{ filter.user.nama_lengkap ? filter.user.nama_lengkap : 'Semua' }}</h6>
+              <h6>Tanggal : {{ filter.tanggal_mulai && filter.tanggal_selesai ? `${moment(filter.tanggal_mulai).format('LL')} - ${moment(filter.tanggal_selesai).format('LL')}` : filter.tanggal_mulai ? `lebih dari `+ moment(filter.tanggal_mulai).format('LL') : filter.tanggal_selesai ? `kurang dari `+ moment(filter.tanggal_selesai).format('LL') : 'Semua' }} </h6>
               <h6>Jumlah : {{ absens?.length }}</h6>
             </div>
             <button class="btn btn-success" id="filerHapus" type="button" @click="x"><i class="bi bi-file-earmark-spreadsheet"></i> Cetak</button>
@@ -307,7 +307,7 @@ const getFotoAbsen = async (id) => {
 
 const getListFilteredtugases = async () => {
   try {
-    judul_excel.value = "RAPTOR-ABSENSI"
+    judul_excel.value = "RAPTOR-PRESENSI"
     if (['HDI','PDL','AAF'].includes(me.value.nama)) {
       judul_excel.value += `-DIVISI ${me.value.nama}`
     }
@@ -322,7 +322,7 @@ const getListFilteredtugases = async () => {
     }
 
     if (filter.value.tanggal_selesai != '' && filter.value.tanggal_mulai == '') {
-      judul_excel.value += `-(<=${moment(filter.value.tanggal_selesai).format('LL')})`
+      judul_excel.value += `-(kurang dari ${moment(filter.value.tanggal_selesai).format('LL')})`
     }
 
     if (filter.value.tanggal_selesai != '' && filter.value.tanggal_mulai != '') {
@@ -373,11 +373,11 @@ const handlePageChange = async (page) => {
 
 const x = async () => {
   const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet("LAPORAN ABSENSI HARIAN");
+  const sheet = workbook.addWorksheet("LAPORAN PRESENSI HARIAN");
 
   let judul = 1;
   sheet.mergeCells("A" + judul + ":" + "G" + judul)
-  sheet.getCell("A" + judul).value = ("LAPORAN ABSENSI HARIAN")
+  sheet.getCell("A" + judul).value = ("LAPORAN PRESENSI HARIAN")
   sheet.getCell("A" + judul).font = { bold: true, underline: true, name: 'Times New Roman', size: 14 };
 
   judul += 2
@@ -387,11 +387,11 @@ const x = async () => {
   
   judul += 1
   sheet.mergeCells("A" + judul + ":" + "C" + judul)
-  sheet.getCell("A" + judul).value = (`Nama Lengkap = ${filter.value.user?.nama_lengkap ? filter.value.user?.nama_lengkap : ''}`)
+  sheet.getCell("A" + judul).value = (`Nama Lengkap = ${filter.value.user?.nama_lengkap ? filter.value.user?.nama_lengkap : 'semua'}`)
   sheet.getCell("A" + judul).font = { bold: true, size: 11 };
   
   sheet.mergeCells("D" + judul + ":" + "E" + judul)
-  sheet.getCell("D" + judul).value = (`Tanggal = ${filter.value.tanggal_mulai && filter.value.tanggal_selesai ? `${moment(filter.value.tanggal_mulai).format('LL')} - ${moment(filter.value.tanggal_selesai).format('LL')}` : filter.value.tanggal_mulai ? `lebih dari `+ moment(filter.value.tanggal_mulai).format('LL') : filter.value.tanggal_selesai ? `kurang dari `+moment(filter.value.tanggal_selesai).format('LL') : ''}`)
+  sheet.getCell("D" + judul).value = (`Tanggal = ${filter.value.tanggal_mulai && filter.value.tanggal_selesai ? `${moment(filter.value.tanggal_mulai).format('LL')} - ${moment(filter.value.tanggal_selesai).format('LL')}` : filter.value.tanggal_mulai ? `lebih dari `+ moment(filter.value.tanggal_mulai).format('LL') : filter.value.tanggal_selesai ? `kurang dari `+moment(filter.value.tanggal_selesai).format('LL') : 'semua'}`)
   sheet.getCell("D" + judul).font = { bold: true, size: 11 };
   
   judul += 2

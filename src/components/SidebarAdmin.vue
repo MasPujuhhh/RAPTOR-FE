@@ -14,7 +14,7 @@
       </li>
       <li class="nav-item">
         <router-link :to="{ path: '/admin/absensi' }" class="nav-link" :class="{ active: isActive('/admin/absensi') }">
-          <i class="bi bi-person-lines-fill" style="margin-right: 0.5rem;"></i> Absensi
+          <i class="bi bi-person-lines-fill" style="margin-right: 0.5rem;"></i> Presensi
         </router-link>
       </li>
       <li class="nav-item">

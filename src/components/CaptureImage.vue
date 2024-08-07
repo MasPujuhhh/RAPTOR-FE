@@ -1,10 +1,8 @@
 <template>
   <div class="container-fluid d-flex justify-content-center">
     <!-- STATUS -->
-    <div
-      class="d-flex flex-column bg-primary justify-content-center p-4 gap-3 bg-white shadow rounded-3"
-      style="width: 35%"
-    >
+    <div class="d-flex flex-column bg-primary justify-content-center p-4 gap-3 bg-white shadow rounded-3"
+      style="width: 35%">
       <div class="w-100 d-flex">
         <RouterLink to="/">
           <button class="btn btn-secondary fw-medium text-lowercase py-2">
@@ -13,117 +11,59 @@
           </button>
         </RouterLink>
       </div>
-      <div
-        class="d-flex flex-column align-items-center justify-content-center bg-white shadow rounded-3 p-4"
-      >
-        <p
-          class="fs-5 fw-semibold font- text-uppercase border-bottom border-bottom-secondary pb-3 w-100"
-          style="letter-spacing: 0.3px"
-        >
-          Absensi
+      <div class="d-flex flex-column align-items-center justify-content-center bg-white shadow rounded-3 p-4">
+        <p class="fs-5 fw-semibold font- text-uppercase border-bottom border-bottom-secondary pb-3 w-100"
+          style="letter-spacing: 0.3px">
+          ABSEN {{ tipe == 'check_in' ? 'PAGI' : 'SORE' }}
         </p>
         <div class="w-75 d-flex justify-content-between">
           <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="status"
-              value="masuk"
-              id="masuk"
-              v-model="status"
-            />
-            <label
-              class="form-check-label fs-5 fw-medium text-lowercase"
-              for="masuk"
-              style="margin-top: -3px"
-            >
+            <input class="form-check-input" type="radio" name="status" value="masuk" id="masuk" v-model="status" :disabled="tipe == 'check_out'">
+            <label class="form-check-label fs-5 fw-medium text-lowercase" for="masuk" style="margin-top: -3px">
               Masuk
             </label>
           </div>
           <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="status"
-              value="wfh"
-              id="wfh"
-              v-model="status"
-            />
-            <label
-              class="form-check-label fs-5 fw-medium text-lowercase"
-              for="wfh"
-              style="margin-top: -3px"
-            >
+            <input class="form-check-input" type="radio" name="status" value="wfh" id="wfh" v-model="status" :disabled="tipe == 'check_out'"/>
+            <label class="form-check-label fs-5 fw-medium text-lowercase" for="wfh" style="margin-top: -3px">
               WFH
             </label>
           </div>
           <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="status"
-              value="izin"
-              id="izin"
-              v-model="status"
-            />
-            <label
-              class="form-check-label fs-5 fw-medium text-lowercase"
-              for="izin"
-              style="margin-top: -3px"
-            >
+            <input class="form-check-input" type="radio" name="status" value="izin" id="izin" v-model="status" :disabled="tipe == 'check_out'"/>
+            <label class="form-check-label fs-5 fw-medium text-lowercase" for="izin" style="margin-top: -3px">
               Izin
             </label>
           </div>
           <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="status"
-              value="sakit"
-              id="sakit"
-              v-model="status"
-            />
-            <label
-              class="form-check-label fs-5 fw-medium text-lowercase"
-              for="sakit"
-              style="margin-top: -3px"
-            >
+            <input class="form-check-input" type="radio" name="status" value="sakit" id="sakit" v-model="status" :disabled="tipe == 'check_out'"/>
+            <label class="form-check-label fs-5 fw-medium text-lowercase" for="sakit" style="margin-top: -3px">
               Sakit
             </label>
           </div>
         </div>
       </div>
 
-      <img
-        :src="capturedImage"
-        v-if="capturedImage"
-        class="captured-image rounded-3"
-      />
+      <!-- :style="status == 'sakit' || 'izin' ? 'transform':''" -->
+      <img :src="capturedImage" v-if="capturedImage || absensi.foto_dokumen" class="captured-image rounded-3" :style="status=='izin' ?  style='transform: scaleX(1);' : ''"/>
 
       <!-- FOTO (Kamera atau Form Input) -->
-      <div
-        v-if="(status === 'masuk' || status === 'wfh') && !capturedImage"
-        class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3"
-      >
+      <div v-if="(status === 'masuk' || status === 'wfh') && !capturedImage"
+        class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3">
         <video ref="video" class="video rounded-3" autoplay></video>
-        <button
-          class="btn btn-secondary fw-medium text-lowercase py-2"
-          @click="captureImage"
-        >
-          Capture
+        <button class="btn btn-secondary fw-medium text-lowercase py-2" @click="captureImage">
+          <i class="bi bi-camera"></i>
         </button>
       </div>
-      <div
-        v-else-if="status === 'sakit' || status === 'izin'"
-        class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3"
-      >
-        <input type="file" @change="handleFileUpload" class="form-control" />
+      <div v-else-if="status === 'sakit' || status === 'izin'"
+        class="d-flex flex-column bg-primary p-4 gap-3 bg-white shadow rounded-3">
+        <input type="file" @change="handleFileUpload" id="dokumen" class="form-control" accept="image/jpeg, image/png" placeholder="Upload an image (JPG, JPEG, PNG)" :disabled="absensi.foto_dokumen" />
       </div>
 
       <!-- Tombol Delete dan Save -->
       <div class="d-flex justify-content-between">
-        <button class="btn btn-danger w-25" @click="deleteImage">Delete</button>
-        <button class="btn btn-success w-25" @click="saveImage">Save</button>
+        <button class="btn btn-danger w-25" @click="deleteImage" :disabled="!capturedImage">Delete</button>
+        <button class="btn btn-success w-25" @click="saveImage" :disabled="!capturedImage">Save</button>
       </div>
     </div>
 
@@ -143,10 +83,11 @@ import "moment/locale/id";
 const router = useRouter();
 const route = useRoute();
 
+const tipe = ref(null)
 const video = ref(null);
 const canvas = ref(null);
 const captured = ref(false);
-const capturedImage = ref("");
+const capturedImage = ref(null);
 const status = ref();
 const absensi = ref({});
 const demo = ref("");
@@ -212,6 +153,10 @@ const renderAbsen = async (jadwal = null) => {
     const data = res.data?.data;
     absensi.value = data;
     status.value = data.status;
+    tipe.value = route.query.tipe;
+    if (data.foto_dokumen) {
+      capturedImage.value = endpoint + data.foto_dokumen
+    }
   } catch (error) {
     const data = error.response?.data.errors;
     if (data) {
@@ -234,15 +179,28 @@ function getLocation() {
 
 function showPosition(position) {
   koordinat.value = {
-    latitude:position.coords.latitude,
-    longitude:position.coords.longitude
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude
   }
   console.log('koordinat', koordinat)
+  if (koordinat.value.latitude && koordinat.value.longitude) {
+    toast.success(`koordinat (lat:${koordinat.value.latitude}, long:${koordinat.value.longitude})`, {
+      autoClose: 2000,
+    });
+  } else {
+    toast.error(`koordinat belum ditemukan`, {
+      autoClose: 2000,
+    });
+  }
 }
 
 const saveImage = async () => {
-  getLocation();
-  const blob = await fetch(capturedImage.value).then((res) => res.blob());
+
+  let blob = null
+  console.log(absensi.value.foto_dokumen)
+  if (!absensi.value.foto_dokumen) {
+    blob = await fetch(capturedImage.value).then((res) => res.blob());
+  }
   let jadwal = {};
   if (route.query.tipe == "check_in") {
     jadwal.check_in = new Date();
@@ -252,7 +210,9 @@ const saveImage = async () => {
   }
 
   const formData = new FormData();
-  formData.append("foto", blob, "captured-image.png");
+  if (!absensi.value.foto_dokumen) {
+    formData.append("foto", blob, "captured-image.png");
+  }
   formData.append("status", status.value);
   formData.append("absensi_id", absensi.value.id);
   formData.append(
@@ -271,6 +231,7 @@ const saveImage = async () => {
 
   console.group(koordinat.value);
   console.log(...formData);
+
 
   try {
     const res = await axios.post(`${endpoint}/absensi/add`, formData, {
@@ -316,6 +277,7 @@ watch(status, (new_status) => {
 });
 
 onMounted(() => {
+  getLocation();
   renderAbsen();
   if (status.value === "masuk" || status.value === "wfh") {
     initCamera();

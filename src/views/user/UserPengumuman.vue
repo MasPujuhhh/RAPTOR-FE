@@ -16,7 +16,7 @@
       >
         <h2 class="mb-4">Pengumuman</h2>
         <div class="list-group">
-          <a v-for="item in pengumumans" href="#" @click="readpengumuman(item)" class="list-group-item list-group-item-action" :style="!item.is_read ? `background-color:white` : `background-color:rgba(189, 195, 199, 0.3)`"  aria-current="true">
+          <a v-for="item in pengumumans" href="#" @click="readpengumuman(item)" class="list-group-item list-group-item-action" :style="item.is_read ? `background-color:white` : `background-color:rgba(189, 195, 199, 0.3)`"  aria-current="true">
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{ item.judul }}</h5>
               <small>{{ moment(item.createdAt).format('LL') }}, {{ moment(item.createdAt).format('HH:mm')}}</small>

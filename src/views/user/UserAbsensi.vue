@@ -15,7 +15,7 @@
         class="container-fluid"
       >
       <div>
-            <h2>Absensi</h2>
+            <h2>Presensi</h2>
             <hr style="margin-bottom: 0.3rem;">
             <hr style="margin-top: 0.3rem;">
           </div>
@@ -56,10 +56,10 @@
           </div>
 
           <!-- User List Table -->
-          <div v-if="absens?.length != 0" class="d-flex justify-content-between w-75 mt-4">
+          <div v-if="absens?.length" class="d-flex justify-content-between w-75 mt-4">
             <div class="d-flex justify-content-between w-75 mb-3">
               <h6>Nama Lengkap : {{ me?.nama_lengkap }}</h6>
-              <h6>Tanggal : {{ filter.tanggal_mulai && filter.tanggal_selesai ? `${moment(filter.tanggal_mulai).format('LL')} - ${moment(filter.tanggal_selesai).format('LL')}` : filter.tanggal_mulai ? `lebih dari `+ moment(filter.tanggal_mulai).format('LL') : filter.tanggal_selesai ? `kurang dari `+ moment(filter.tanggal_selesai).format('LL') : '' }} </h6>
+              <h6>Tanggal : {{ filter.tanggal_mulai && filter.tanggal_selesai ? `${moment(filter.tanggal_mulai).format('LL')} - ${moment(filter.tanggal_selesai).format('LL')}` : filter.tanggal_mulai ? `lebih dari `+ moment(filter.tanggal_mulai).format('LL') : filter.tanggal_selesai ? `kurang dari `+ moment(filter.tanggal_selesai).format('LL') : 'Semua' }} </h6>
               <h6>Jumlah : {{ absens?.length }}</h6>
             </div>
             <!-- <button class="btn btn-success" id="filerHapus" type="button" @click="x"><i class="bi bi-file-earmark-spreadsheet"></i> Cetak</button> -->
@@ -72,7 +72,7 @@
                 <tr>
                   <th>#</th>
                   <th>Tanggal (In - Out)</th>
-                  <th>Nama User</th>
+                  <th>Nama Lengkap</th>
                   <th>Status</th>
                   <th>Check-in</th>
                   <th>Check-out</th>
@@ -92,7 +92,7 @@
                   <td>
 
                     <!-- DELETE -->
-                    <button v-if="!absen.status" class="btn btn-warning btn-sm" type="button" @click="$router.push(`/absen/${absen?.jadwal.split('T')[0]}`)"> 
+                    <button v-if="!absen.check_out" class="btn btn-warning btn-sm me-2" type="button" @click="navigateAbsen(absen?.jadwal.split('T')[0], !absen.check_in ? 'check_in' : 'check_out' )"> 
                       <i class="bi bi-pencil"></i>
                     </button>
                     <button v-if="absen.status" class="btn btn-info btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#deleteUserModal" @click="getFotoAbsen(absen.id)"> 
@@ -117,11 +117,11 @@
                   <div class="d-flex flex-row mx-auto justify-content-evenly w-100">
                     <div  v-if="absen_detail?.foto_absen_pagi">
                       <h6>Foto Check In ( {{ moment(absen_detail?.check_in).format('HH:mm') }} WIB)</h6>
-                      <img class="d-block mx-auto border" :src="endpoint+absen_detail?.foto_absen_pagi" alt="">
+                      <img class="d-block mx-auto border" :src="endpoint+absen_detail?.foto_absen_pagi" alt="" style="transform: scaleX(-1);">
                     </div>
                     <div  v-if="absen_detail?.foto_absen_sore">
                       <h6>Foto Check Out ( {{ moment(absen_detail?.check_out).format('HH:mm') }} WIB)</h6>
-                      <img class="d-block mx-auto border" :src="endpoint+absen_detail?.foto_absen_sore" alt="">
+                      <img class="d-block mx-auto border" :src="endpoint+absen_detail?.foto_absen_sore" alt="" style="transform: scaleX(-1);">
                     </div>
                     <div v-if="absen_detail?.foto_dokumen">
                       <h6>Foto Tambahan</h6>
@@ -203,6 +203,13 @@
     const new_pass = ref({})
   
     const endpoint = import.meta.env.VITE_ENDPOINT;
+
+    const navigateAbsen = (jadwal, tipe) => {
+      router.push({
+        path: `/absen/${jadwal}`,
+        query: { tipe }
+      })
+    }
   
     const renderMe = async () => {
       try {

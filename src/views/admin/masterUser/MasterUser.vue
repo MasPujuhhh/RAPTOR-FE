@@ -410,7 +410,7 @@ const renderMe = async () => {
 const getRole = async () => {
   try {
     const res = await axios.get(
-      `${endpoint}/role/all`, {
+      `${endpoint}/role/all_by_division`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -483,6 +483,8 @@ const getDetailUser = async (id) => {
 
 const getListFilteredUsers = async () => {
   try {
+    filter.value.per_page = perPage.value
+    filter.value.page = currentPage.value
     const res = await axios.get(
       `${endpoint}/user/list`, {
         params: filter.value,
@@ -494,7 +496,8 @@ const getListFilteredUsers = async () => {
     );
     users.value = res.data?.data;
     metadata.value = res.data?.metadata;
-    console.log(metadata.value);
+    // currentPage.value = res.data?.data.current_page
+    // console.log("dataaaaaaaaa", res.data);
   } catch (error) {
     const data = error.response?.data.errors;
     if (data) {
@@ -609,7 +612,7 @@ const hapusUser = async (id) => {
 // Handle page change
 const handlePageChange = async (page) => {
   currentPage.value = page;
-  await getListUsers();
+  await getListFilteredUsers();
 };
 
 onMounted(() => {

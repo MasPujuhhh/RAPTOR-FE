@@ -117,8 +117,8 @@
                                 <input type="text" class="form-control" id="nama" v-model="label_detail.nama" required disabled>
                               </div>
                               <div class="mb-3">
-                                <label for="color" class="form-label">Warna</label>
-                                <input type="text" class="form-control" id="color" v-model="label_detail.color" required disabled>
+                                <label for="myColor" class="form-label">Warna</label>
+                                <input type="color" class="form-control form-control-color" id="myColor" v-model="label_detail.color" title="Choose a color" disabled>
                               </div>
                               <br>
                               <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
@@ -148,9 +148,10 @@
                                 <input type="text" class="form-control" id="nama" v-model="label_detail.nama" required>
                               </div>
                               <div class="mb-3">
-                                <label for="color" class="form-label">Warna</label>
-                                <input type="text" class="form-control" id="color" v-model="label_detail.color" required>
+                                <label for="myColor" class="form-label">Warna</label>
+                                <input type="color" class="form-control form-control-color" id="myColor" v-model="label_detail.color" title="Choose a color">
                               </div>
+                              
                               <br>
                               <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
                               <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Submit</button>

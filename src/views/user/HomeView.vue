@@ -179,12 +179,15 @@ const renderLabel = async () => {
 
 const renderTugas = async () => {
   try {
+    console.log('toekennn', endpoint)
     const res = await axios.get(`${endpoint}/tugas/all_by_token`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
+
+    console.log('res',res.data)
 
     if (res.data.data.length == 0) {
       console.log('jalannnnnnn')

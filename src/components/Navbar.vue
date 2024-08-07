@@ -44,7 +44,7 @@
             <ul style="position: absolute; left: 83%" class="dropdown-menu">
               <li style="cursor: pointer;"><a class="dropdown-item" @click="DailyReport">Daily Report</a></li>
               <li style="cursor: pointer;"><a class="dropdown-item" @click="Tugas">Tugas</a></li>
-              <li style="cursor: pointer;"><a class="dropdown-item" @click="Absensi">Absensi</a></li>
+              <li style="cursor: pointer;"><a class="dropdown-item" @click="Absensi">Presensi</a></li>
               <li style="cursor: pointer;"><a class="dropdown-item" @click="Pengumuman">Pengumuman</a></li>
             </ul>
           </div>

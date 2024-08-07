@@ -72,9 +72,9 @@
           <!-- User List Table -->
           <div v-if="d_reports?.length != 0" class="d-flex justify-content-between w-75 mt-4">
             <div class="d-flex justify-content-between w-75">
-              <h6>Nama Lengkap : {{ filter.user.nama_lengkap }}</h6>
-              <h6>Tugas : {{ filter.tugas.judul }}</h6>
-              <h6>Tanggal : {{ filter.tanggal_mulai && filter.tanggal_selesai ? `${moment(filter.tanggal_mulai).format('LL')} - ${moment(filter.tanggal_selesai).format('LL')}` : filter.tanggal_mulai ? `lebih dari `+filter.tanggal_mulai : filter.tanggal_selesai ? `kurang dari `+filter.tanggal_selesai : '' }} </h6>
+              <h6>Nama Lengkap : {{ filter.user.nama_lengkap ? filter.user.nama_lengkap : 'Semua' }}</h6>
+              <h6>Tugas : {{ filter.tugas.judul ? filter.tugas.judul : 'Semua'  }}</h6>
+              <h6>Tanggal : {{ filter.tanggal_mulai && filter.tanggal_selesai ? `${moment(filter.tanggal_mulai).format('LL')} - ${moment(filter.tanggal_selesai).format('LL')}` : filter.tanggal_mulai ? `lebih dari `+filter.tanggal_mulai : filter.tanggal_selesai ? `kurang dari `+filter.tanggal_selesai : 'Semua' }} </h6>
               <h6>Jumlah : {{ d_reports?.length }}</h6>
             </div>
             <button class="btn btn-success" id="filerHapus" type="button" @click="x"><i class="bi bi-file-earmark-spreadsheet"></i> Cetak</button>
@@ -355,17 +355,17 @@ const x = async () => {
   
   judul += 1
   sheet.mergeCells("A" + judul + ":" + "F" + judul)
-  sheet.getCell("A" + judul).value = (`Nama Lengkap = ${filter.value.user?.nama_lengkap ? filter.value.user?.nama_lengkap : ''}`)
+  sheet.getCell("A" + judul).value = (`Nama Lengkap = ${filter.value.user?.nama_lengkap ? filter.value.user?.nama_lengkap : 'Semua'}`)
   sheet.getCell("A" + judul).font = { bold: true, size: 11 };
 
   judul += 1
   sheet.mergeCells("A" + judul + ":" + "F" + judul)
-  sheet.getCell("A" + judul).value = (`Tugas  = ${filter.value.tugas?.judul ? filter.value.tugas?.judul : ''}`)
+  sheet.getCell("A" + judul).value = (`Tugas  = ${filter.value.tugas?.judul ? filter.value.tugas?.judul : 'Semua'}`)
   sheet.getCell("A" + judul).font = { bold: true, size: 11 };
   
   judul += 1
   sheet.mergeCells("A" + judul + ":" + "F" + judul)
-  sheet.getCell("A" + judul).value = (`Tanggal = ${filter.value.tanggal_mulai && filter.value.tanggal_selesai ? `${moment(filter.value.tanggal_mulai).format('LL')} - ${moment(filter.value.tanggal_selesai).format('LL')}` : filter.value.tanggal_mulai ? `lebih dari `+ moment(filter.value.tanggal_mulai).format('LL') : filter.value.tanggal_selesai ? `kurang dari `+moment(filter.value.tanggal_selesai).format('LL') : ''}`)
+  sheet.getCell("A" + judul).value = (`Tanggal = ${filter.value.tanggal_mulai && filter.value.tanggal_selesai ? `${moment(filter.value.tanggal_mulai).format('LL')} - ${moment(filter.value.tanggal_selesai).format('LL')}` : filter.value.tanggal_mulai ? `lebih dari `+ moment(filter.value.tanggal_mulai).format('LL') : filter.value.tanggal_selesai ? `kurang dari `+moment(filter.value.tanggal_selesai).format('LL') : 'Semua'}`)
   sheet.getCell("A" + judul).font = { bold: true, size: 11 };
     
   judul += 2
