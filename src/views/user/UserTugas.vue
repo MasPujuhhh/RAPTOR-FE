@@ -71,7 +71,7 @@
                   <td>{{ tugas.kategori }}</td>
                   <td>{{ moment(tugas.tanggal_mulai ).format('LL') }}</td>
                   <td>{{ moment(tugas.tanggal_selesai ).format('LL') }}</td>
-                  <td>
+                <td>
                     <span :class="{'badge bg-success': tugas.is_done == true, 'badge bg-warning': tugas.is_done == false}">
                       {{ tugas.is_done ? 'DONE' : 'ON-PROGRESS'}}
                     </span>

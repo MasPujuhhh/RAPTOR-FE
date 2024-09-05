@@ -76,6 +76,7 @@ const signIn = async () => {
       busy.value = false;
     }, 1500);
   } catch (error) {
+    console.log(error)
     const data = error.response?.data.errors;
     toast.error(`CODE ${data.code} : ${data.message}`, { autoClose: 2000 });
     setTimeout(() => busy.value = false, 1500);

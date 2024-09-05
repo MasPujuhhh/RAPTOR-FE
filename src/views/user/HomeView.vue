@@ -133,15 +133,19 @@ const renderAbsen = async (jadwal = null) => {
     absensi.value.jadwal = data?.jadwal.split('T')[0]
     if (!data?.check_in || !data?.keterangan) {
       absensi.value.keterangan = 'belum-absen-pagi'
+      absensi.value.daily_report = false
     }
     if (data?.check_in && !data?.check_out) {
       absensi.value.keterangan = 'belum-absen-sore'
+      absensi.value.daily_report = true
     }
     if (data?.check_in && data?.check_out) {
       absensi.value.keterangan = 'sudah-absen'
+      absensi.value.daily_report = true
     }
     if (data == null) {
       absensi.value.keterangan = 'belum-tersedia'
+      absensi.value.daily_report = false
     }
 
     console.log('absensi', absensi.value)
@@ -311,7 +315,7 @@ const saveEditReport = async (index) => {
     toast.success('Berhasil Mengupdate Daily Report', {
       autoClose: 2000,
     });
-    renderDailyReport()
+    renderDailyReport(date.value);
     detail_report.value = { deskripsi: "", tugas_id: "", label: "" };
     editTask.value = null;
   } catch (error) {
@@ -337,7 +341,7 @@ const deleteReport = async (index) => {
     toast.success('Berhasil Menghapus Daily Report', {
       autoClose: 2000,
     });
-    renderDailyReport()
+    renderDailyReport(date.value);
   } catch (error) {
     const data = error.response?.data.errors;
     if (data) {
@@ -404,6 +408,47 @@ const hapusComment = async (id) => {
 }; const cancelAddDaily = () => {
   showtask.value = false;
   new_report.value = { deskripsi: "", tugas_id: "", label_id: "" };
+};
+
+let detail_doc_file = ref({})
+const detailDocFile = (file, comment) => {
+  detail_doc_file.value.file = file
+  detail_doc_file.value.comment = comment
+}
+
+const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Lakukan sesuatu dengan file yang dipilih, misalnya mengirim ke server
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('tugas_id', tugas_detail.value.id);
+    formData.append('comment', newCommentText.value);
+    // });
+    try {
+      console.log(...formData)
+      let res = await axios.post(`${endpoint}/comment/upload_image`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // const data = res.data?.data;
+      toast.success('Berhasil Menambahkan Gambar dan Komentar', {
+        autoClose: 2000,
+      });
+      newCommentText.value = ''
+      renderDetailTugas(tugas_detail.value.id)
+      newCommentText.value = ''
+    } catch (error) {
+      console.log(error)
+      const err = error.response.data.errors
+      toast.error(`CODE ${err.code} ${err.message}`, {
+            autoClose: 2000,
+      });
+    }
 };
 
 
@@ -493,7 +538,7 @@ onMounted(() => {
             class="btn btn-sm btn-danger"><i class="bi bi-dash-circle" style="margin-right: 0.31rem;"></i>Check
             In</button>
           <button v-if="absensi?.keterangan == 'belum-absen-sore'" @click="navigateAbsen(absensi.jadwal, 'check_out')"
-            class="btn btn-sm btn-danger"><i class="bi bi-dash-circle" style="margin-right: 0.31rem;"></i>Check
+            class="btn btn-sm btn-primary"><i class="bi bi-dash-circle" style="margin-right: 0.31rem;"></i>Check
             Out</button>
           <button v-if="absensi?.keterangan == 'sudah-absen'" class="btn btn-sm btn-success" disabled><i
               class="bi bi-check-circle" style="margin-right: 1rem;"></i>Sudah Absen</button>
@@ -557,7 +602,7 @@ onMounted(() => {
                 <span>
                   <input v-if="me.id == sub.user_id" type="checkbox" class="form-check-input me-2"
                     data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer;"
-                    :checked="sub.is_done" :disabled="sub.is_done" @change="getDetailSubTugas(sub, $event)">
+                    :checked="sub.is_done" :disabled="sub.is_done || !absensi?.daily_report" @change="getDetailSubTugas(sub, $event)">
 
                   <span class="me-2 fw-bold w-25">{{ sub.judul }}</span>
                   <div class="ms-4 text-start">
@@ -603,7 +648,7 @@ onMounted(() => {
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" @click="doneSubTugas(sub_tugas_detail?.sub_tugas_id)"
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="doneSubTugas(sub_tugas_detail?.sub_tugas_id)"
                       :disabled="cekTerlambat(new Date(sub_tugas_detail?.tanggal_selesai), new Date()) && !alasan_terlambat">Simpan</button>
                   </div>
                 </div>
@@ -664,15 +709,27 @@ onMounted(() => {
                               </div>
                             </div>
                           </div>
+                          <button v-if="comment?.file" type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#DeatilDoc" @click="detailDocFile(`${endpoint}${comment?.file}`, comment?.comment)"><i class="bi bi-image"></i> {{ comment?.file.split('/assets/img/')[1] }}</button>
                           <p class="card-text">{{ comment.comment }}</p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="input-group mb-3">
-                  <input type="text" class="form-control" placeholder="Ketikan komentar" v-model="newCommentText">
+                <div v-if="absensi?.daily_report" class="input-group mb-3">
+                  <input type="text" class="form-control" placeholder="Ketikan komentar" v-model="newCommentText" :disabled="!absensi?.daily_report">
+                  <label for="fileInput" class="btn btn-warning mb-0">
+                    <i class="bi bi-link-45deg"></i>
+                  </label>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    accept=".png, .jpg, .jpeg"
+                    style="display: none"
+                    @change="handleFileChange"
+                  />
                   <button class="btn btn-primary" type="button" @click="addComment"><i class="bi bi-send"></i></button>
+                  <!-- <button class="btn btn-primary" type="button" @click="addComment"><i class="bi bi-send"></i></button> -->
                 </div>
               </div>
             </div>
@@ -759,9 +816,29 @@ onMounted(() => {
             </div>
           </div>
           <button class="bg-white shadow rounded-3 border-0 btn fs-1"
-            style="width: 45%; min-height: 300px; max-height: 350px" @click="showtask = true">
+            style="width: 45%; min-height: 300px; max-height: 350px" @click="showtask = true" :disabled="!absensi?.daily_report">
             +
           </button>
+
+
+          <!-- Modal Detail -->
+          <div class="modal fade" id="DeatilDoc" tabindex="-1" aria-labelledby="DeatilDocLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <!-- <h5 class="modal-title" id="DeatilDocLabel">{{ detail_doc_file.comment }}</h5> -->
+                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body">
+                  <img class="d-block mx-auto" :src="detail_doc_file.file" alt="" srcset="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

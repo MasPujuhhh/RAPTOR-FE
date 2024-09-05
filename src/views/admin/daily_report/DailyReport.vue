@@ -54,6 +54,15 @@
               <label for="TanggalSelelasi" class="form-label">Tanggal Selesai</label>
               <input type="date" id="TanggalSelelasi" class="form-control" v-model="filter.tanggal_selesai" placeholder="Tanggal Selesai">
             </div>
+            <div class="col-md-2">
+              <label for="filterLabe;" class="form-label">Pilih Label</label>
+              <select id="filterLabe;" class="form-select" v-model="filter.label">
+                <option value="" selected disabled>Pilih Label</option>
+                <option v-for="label in labels_all" :key="label.id" :value="{id:label.id, nama:label.nama}">
+                  {{ label.nama }}
+                </option>
+              </select>
+            </div>
 
             <div class="col-md-1">
               <label for="filerSubmit" class="form-label">&nbsp</label>
@@ -132,6 +141,7 @@ const endpoint = import.meta.env.VITE_ENDPOINT;
 
 const d_reports = ref([]);
 const tugases = ref([])
+const labels_all = ref([])
 const foto_absen = ref()
 const users = ref([])
 const judul_excel = ref()
@@ -144,7 +154,8 @@ const filter = ref({
   tugas:'',
   user_id:'',
   tanggal_mulai:'',
-  tanggal_selesai:''
+  tanggal_selesai:'',
+  label:''
 });
 const metadata = ref();
 
@@ -256,6 +267,27 @@ const getAllAbsen = async () => {
   }
 };
 
+const renderAllLabels = async () => {
+  try {
+    let res = await axios.get(`${endpoint}/report_label/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    let data = res.data?.data;
+    labels_all.value = data;
+  } catch (error) {
+    const data = error.response?.data;
+    if (data) {
+      toast.error(`CODE ${data.code} : ${data.message}`, {
+        autoClose: 2000,
+      });
+    }
+    console.log(data);
+  }
+}
+
 
 
 const getListFilteredtugases = async () => {
@@ -265,7 +297,10 @@ const getListFilteredtugases = async () => {
       judul_excel.value += `-DIVISI ${me.value.nama}`
     }
     filter.value.user_id = filter.value?.user.user_id
+    filter.value.label_id = filter.value?.label.id
     filter.value.judul_tugas = filter.value?.tugas.judul
+
+    console.log(filter.value)
 
     if (filter.value.user != '') {
       judul_excel.value += `-${filter.value.user.nama_lengkap}`
@@ -273,6 +308,10 @@ const getListFilteredtugases = async () => {
 
     if (filter.value.tugas != '') {
       judul_excel.value += `-${filter.value.tugas.judul}`
+    }
+
+    if (filter.value.label != '') {
+      judul_excel.value += `-${filter.value.label.nama}`
     }
 
     if (filter.value.tanggal_mulai != '' && filter.value.tanggal_selesai == '') {
@@ -321,7 +360,8 @@ const resetFilters = async () => {
     tugas:'',
     user_id:'',
     tanggal_mulai:'',
-    tanggal_selesai:''
+    tanggal_selesai:'',
+    label:''
   };
   currentPage.value = 1;
   d_reports.value = []
@@ -366,6 +406,11 @@ const x = async () => {
   judul += 1
   sheet.mergeCells("A" + judul + ":" + "F" + judul)
   sheet.getCell("A" + judul).value = (`Tanggal = ${filter.value.tanggal_mulai && filter.value.tanggal_selesai ? `${moment(filter.value.tanggal_mulai).format('LL')} - ${moment(filter.value.tanggal_selesai).format('LL')}` : filter.value.tanggal_mulai ? `lebih dari `+ moment(filter.value.tanggal_mulai).format('LL') : filter.value.tanggal_selesai ? `kurang dari `+moment(filter.value.tanggal_selesai).format('LL') : 'Semua'}`)
+  sheet.getCell("A" + judul).font = { bold: true, size: 11 };
+
+  judul += 1
+  sheet.mergeCells("A" + judul + ":" + "F" + judul)
+  sheet.getCell("A" + judul).value = (`Label  = ${filter.value.label?.nama ? filter.value.label?.nama : 'Semua'}`)
   sheet.getCell("A" + judul).font = { bold: true, size: 11 };
     
   judul += 2
@@ -465,6 +510,7 @@ onMounted(() => {
   renderMe()
   renderUser()
   renderTugas()
+  renderAllLabels()
 });
 </script>
 

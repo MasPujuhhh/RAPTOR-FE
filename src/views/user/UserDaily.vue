@@ -43,6 +43,13 @@
               <label for="TanggalSelelasi" class="form-label">Tanggal Selesai</label>
               <input type="date" id="TanggalSelelasi" class="form-control" v-model="filter.tanggal_selesai" placeholder="Tanggal Selesai">
             </div>
+            <div class="col-md-2">
+              <label for="labelMaster" class="form-label">Label</label>
+              <select class="form-select" id="labelMaster" v-model="filter.label_id" required>
+                <option value="" selected disabled>Select labelS</option>
+                <option v-for="label in labels" :key="label" :value="label.id">{{ label.nama }}</option>
+              </select>
+            </div>
 
             <div class="col-md-1">
               <label for="filerSubmit" class="form-label">&nbsp</label>
@@ -162,9 +169,12 @@ const filter = ref({
   tugas:'',
   user_id:'',
   tanggal_mulai:'',
-  tanggal_selesai:''
+  tanggal_selesai:'',
+  label_id :''
 });
 const metadata = ref();
+
+
 
 const is_admin = localStorage.getItem("authAdmin");
 const token = localStorage.getItem("token");
@@ -386,7 +396,8 @@ const resetFilters = async () => {
     tugas:'',
     user_id:'',
     tanggal_mulai:'',
-    tanggal_selesai:''
+    tanggal_selesai:'',
+    label_id : ''
   };
   currentPage.value = 1;
   d_reports.value = []

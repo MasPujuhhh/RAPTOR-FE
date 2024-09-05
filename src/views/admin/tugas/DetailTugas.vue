@@ -246,6 +246,8 @@
                             </div>
                             </div>
                           </div>
+                          <!-- <img v-if="comment?.file" :src="`${endpoint}${comment.file}`" alt=""> -->
+                          <button v-if="comment?.file" type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#DeatilDoc" @click="detailDocFile(`${endpoint}${comment?.file}`, comment?.comment)"><i class="bi bi-image"></i> {{ comment?.file.split('/assets/img/')[1] }}</button>
                           <p class="card-text">{{ comment.comment }}</p>
                         </div>
                       </div>
@@ -254,7 +256,37 @@
                 </div>
                 <div class="input-group mb-3">
                   <input type="text" class="form-control" placeholder="Ketikan komentar" v-model="newCommentText">
+                  <!-- <button class="btn btn-danger" type="file" id="fileInput" accept=".png, .jpg, .jpeg" style="display: none" @click="handleFileChange"><i class="bi bi-link-45deg"></i></button> -->
+                  <label for="fileInput" class="btn btn-warning mb-0">
+                    <i class="bi bi-link-45deg"></i>
+                  </label>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    accept=".png, .jpg, .jpeg"
+                    style="display: none"
+                    @change="handleFileChange"
+                  />
                   <button class="btn btn-primary" type="button" @click="addComment"><i class="bi bi-send"></i></button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="DeatilDoc" tabindex="-1" aria-labelledby="DeatilDocLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <!-- <h5 class="modal-title" id="DeatilDocLabel">{{ detail_doc_file.comment }}</h5> -->
+                        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                      </div>
+                      <div class="modal-body">
+                        <img class="d-block mx-auto" :src="detail_doc_file.file" alt="" srcset="">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -306,6 +338,8 @@ const kategori_children_option = ref([]);
 let show_history = ref(false)
 
 
+
+
 const tags_option = ref([]);
 const show_tags = computed(() => {
   let html = tugas.value.tags?.map(tag => `<span class="badge me-1" style="background-color:${tag.color}; color:black; margin-bottom: 1rem;"> <i class="bi bi-tag"></i> ${tag.nama}</span>`).join('');
@@ -328,7 +362,6 @@ const getTags = async () => {
         "Content-Type": "application/json",
       }
     });
-
     
     const data = res.data?.data;
     for (let i = 0; i < data.length; i++) {
@@ -573,6 +606,48 @@ const submitSubTugas = async () => {
       });
     }
   }
+};
+
+let detail_doc_file = ref({})
+const detailDocFile = (file, comment) => {
+  detail_doc_file.value.file = file
+  detail_doc_file.value.comment = comment
+}
+
+const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Lakukan sesuatu dengan file yang dipilih, misalnya mengirim ke server
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('tugas_id', tugas.value.id);
+    formData.append('comment', newCommentText.value);
+    // });
+    try {
+      console.log(...formData)
+      let res = await axios.post(`${endpoint}/comment/upload_image`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // const data = res.data?.data;
+      toast.success('Berhasil Menambahkan Gambar dan Komentar', {
+        autoClose: 2000,
+      });
+
+      // toast.success('berhasil update profile', { autoClose: 2000 });
+      await getDetailTugas();
+      newCommentText.value = ''
+    } catch (error) {
+      console.log(error)
+      const err = error.response.data.errors
+      toast.error(`CODE ${err.code} ${err.message}`, {
+            autoClose: 2000,
+      });
+    }
 };
 
 onMounted(() => {

@@ -97,11 +97,32 @@
             <div class="card-container">
               <!-- Body Cards -->
               <div class="body-card">
-                <div class="body-card-title" style="margin-bottom: 1rem">Daily Report Terbaru
+                <div class="body-card-title" style="margin-bottom: 1rem">Daily Report
                   <i class="bi bi-file-earmark-check" style="margin-left: 0.5rem; font-size: 30px;"></i>
                 </div>
                 <div class="body-card-content">
-                  <ol v-if="dashboard.daily_report" class="list-group list-group-numbered">
+                  <ol class="list-group list-group-numbered">
+                    <div v-if="dashboard.jadwal" class="mb-4 d-flex gap-2">
+                      <button 
+                        type="button" 
+                        :class="selectedLabel === 'all' ? 'btn btn-primary' : 'btn btn-outline-primary'"
+                        @click="selectLabel('all', date)"
+                      >
+                        All
+                      </button>
+                      <button
+                        v-for="label in labels_all"
+                        :key="label.nama"
+                        type="button"
+                        class="btn"
+                        :class="selectedLabel === label.nama ? 'btn' : 'btn-outline'"
+                        :style="selectedLabel === label.nama ? `background-color: ${label.color}; color: white;` : `border-color: ${label.color}; color: ${label.color};`"
+                        @click="selectLabel(label.nama, date)"
+                      >
+                        {{ label.nama }}
+                      </button>
+                    </div>
+                    <h6  v-if="dashboard.daily_report?.length" style="text-align: start;">Jumlah Daily Report : {{ dashboard.daily_report?.length }}</h6>
                     <li v-for="item in dashboard.daily_report" class="list-group-item d-flex justify-content-between align-items-start">
                       <div class="ms-2 me-auto text-start">
                         <div class="fw-bold" style="margin: 0;">{{ item.judul }}</div>
@@ -109,6 +130,7 @@
                         <div>{{ item.deskripsi?.length > 200 ? `${item.deskripsi?.substring(0, 200)}...` : item.deskripsi }}</div>
                       </div>
                       <span class="badge bg-secondary">{{ moment(item.createdAt).format('L') }}, {{ moment(item.createdAt).format('HH:mm') }}</span>
+                      <span class="badge" :style="`background-color: ${item.color}; margin-left:1rem;`">{{ item.nama }}</span>
                     </li>
                   </ol>
                   <div v-if="!dashboard.daily_report?.length">
@@ -160,10 +182,12 @@ const router = useRouter();
 
 let token = localStorage.getItem("token");
 let checker = ref([]);
+let labels_all = ref ();
 let dashboard = ref({});
 let date = ref(new Date());
 const chartAbsen = ref(null);
 let nilai_chartAbsen = ref(null);
+let selectedLabel = ref('all'); // Initial selected label is 'all'
 
 const endpoint = import.meta.env.VITE_ENDPOINT;
 
@@ -186,9 +210,6 @@ const renderDashboard = async (jadwal = null) => {
 
     const data = res.data?.data;
     dashboard.value = data;
-
-    console.log(data)
-
     await renderPieAbsen(data.absensi);
   } catch (error) {
     const data = error.response?.data;
@@ -281,7 +302,13 @@ const renderPieAbsen = async (absensi) => {
       nilai_chartAbsen.value = x;
     }, 500);
   } catch (error) {
-    console.log(error);
+    const data = error.response?.data;
+    if (data) {
+      toast.error(`CODE ${data.code} : ${data.message}`, {
+        autoClose: 2000,
+      });
+    }
+    console.log(data);
   }
 }
 
@@ -305,7 +332,74 @@ const renderDailyReport = async (date) => {
     let data = res.data?.data;
     butuh_persetujuan.value = data;
   } catch (error) {
-    console.log(error);
+    const data = error.response?.data;
+    if (data) {
+      toast.error(`CODE ${data.code} : ${data.message}`, {
+        autoClose: 2000,
+      });
+    }
+    console.log(data);
+    
+  }
+}
+
+const renderAllLabels = async () => {
+  try {
+    let res = await axios.get(`${endpoint}/report_label/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    let data = res.data?.data;
+    labels_all.value = data;
+  } catch (error) {
+    const data = error.response?.data;
+    if (data) {
+      toast.error(`CODE ${data.code} : ${data.message}`, {
+        autoClose: 2000,
+      });
+    }
+    console.log(data);
+  }
+}
+
+const selectLabel = async (labelId, jadwal) => {
+  selectedLabel.value = labelId;
+
+  if (!jadwal) {
+    jadwal = new Date()
+  }
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  jadwal = jadwal.toLocaleDateString('id-ID', options).split('/').reverse().join('-');
+
+  try {
+    let params = {jadwal}
+    if (selectedLabel.value == 'all') {
+      params.nama_label = null
+    } else {
+      params.nama_label = selectedLabel.value
+    }
+
+    console.log(params)
+
+    let res = await axios.get(`${endpoint}/dashboard/change_label`, {
+      params:params,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    let data = res.data?.data;
+    dashboard.value.daily_report = data;
+  } catch (error) {
+    const data = error.response?.data;
+    if (data) {
+      toast.error(`CODE ${data.code} : ${data.message}`, {
+        autoClose: 2000,
+      });
+    }
+    console.log(data);
   }
 }
 
@@ -320,6 +414,7 @@ const pindahDetail = (id) => {
 
 onMounted(() => {
   renderDashboard();
+  renderAllLabels()
 });
 
 watch(date, (newDate) => {
